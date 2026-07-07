@@ -1,0 +1,13 @@
+{
+  "name": "ia-studio-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site ia studio — front statique + API contact (envoi e-mail natif)",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}
