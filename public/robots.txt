@@ -1,0 +1,21 @@
+# ia studio — https://ia-studio.fr
+User-agent: *
+Allow: /
+
+# IA / moteurs de réponse (AEO) : contenu librement consultable
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://ia-studio.fr/sitemap.xml
