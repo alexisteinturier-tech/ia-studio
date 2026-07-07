@@ -3,10 +3,17 @@
    Node ≥ 18, AUCUNE dépendance obligatoire pour démarrer.
    - Sert ../public (le site)
    - POST /api/contact : enregistre chaque message dans server/messages/
-     et l'envoie par e-mail si le SMTP est configuré (server/.env + nodemailer)
+     et l'envoie par e-mail via l'API HTTP de Resend (server/.env)
    Démarrage : node server.js   (ou : npm start)
+
+   ℹ Pourquoi l'API HTTP de Resend plutôt que le SMTP :
+   la plupart des hébergeurs cloud (Render inclus) bloquent les
+   connexions SMTP sortantes (port 465/587), ce qui fait échouer
+   nodemailer avec un "Connection timeout". L'API HTTP de Resend
+   passe par HTTPS standard (443), jamais bloqué.
    ═══════════════════════════════════════════════════════════════ */
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -25,24 +32,42 @@ const PORT = process.env.PORT || 3000;
     } catch (e) { /* pas de .env : ok */ }
 })();
 
-/* SMTP optionnel (nodemailer) : si absent ou non configuré, les messages
-   sont quand même ENREGISTRÉS dans server/messages/ et le site répond ok. */
-let mailer = null;
-try {
-    const nodemailer = require('nodemailer');
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-        mailer = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: +(process.env.SMTP_PORT || 465),
-            secure: (process.env.SMTP_SECURE || 'true') !== 'false',
-            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+/* Resend (API HTTP) : si RESEND_API_KEY absente, les messages sont
+   quand même ENREGISTRÉS dans server/messages/ et le site répond ok. */
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const MAIL_FROM = process.env.MAIL_FROM || 'ia studio <bonjour@ia-studio.fr>';
+if (RESEND_API_KEY) {
+    console.log('✉  Resend configuré (API HTTP)');
+} else {
+    console.log('✉  RESEND_API_KEY absente (server/.env) → messages enregistrés dans server/messages/ uniquement');
+}
+
+function sendViaResend({ to, replyTo, subject, text }) {
+    return new Promise((resolve, reject) => {
+        const payload = JSON.stringify({ from: MAIL_FROM, to: [to], reply_to: [replyTo], subject, text });
+        const req = https.request({
+            hostname: 'api.resend.com',
+            path: '/emails',
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + RESEND_API_KEY,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload)
+            },
+            timeout: 10000
+        }, r => {
+            let body = '';
+            r.on('data', c => body += c);
+            r.on('end', () => {
+                if (r.statusCode >= 200 && r.statusCode < 300) resolve(body);
+                else reject(new Error('Resend HTTP ' + r.statusCode + ' : ' + body));
+            });
         });
-        console.log('✉  SMTP configuré →', process.env.SMTP_HOST);
-    } else {
-        console.log('✉  SMTP non configuré (server/.env) → messages enregistrés dans server/messages/ uniquement');
-    }
-} catch (e) {
-    console.log('✉  nodemailer non installé (cd server && npm install) → messages enregistrés dans server/messages/ uniquement');
+        req.on('timeout', () => req.destroy(new Error('timeout')));
+        req.on('error', reject);
+        req.write(payload);
+        req.end();
+    });
 }
 
 const MIME = {
@@ -119,11 +144,10 @@ const server = http.createServer((req, res) => {
                 return send(res, 500, '{"ok":false,"error":"stockage"}');
             }
 
-            /* 2) envoyer par e-mail si possible */
-            if (mailer) {
+            /* 2) envoyer par e-mail si possible (API HTTP Resend) */
+            if (RESEND_API_KEY) {
                 try {
-                    await mailer.sendMail({
-                        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+                    await sendViaResend({
                         to: process.env.CONTACT_TO || 'bonjour@ia-studio.fr',
                         replyTo: entry.email,
                         subject: 'Nouveau contact — ' + (entry.projet || 'projet') + (entry.prenom ? ' · ' + entry.prenom : ''),
@@ -134,7 +158,7 @@ const server = http.createServer((req, res) => {
                               '— envoyé depuis le site le ' + entry.date
                     });
                 } catch (e) {
-                    console.error('SMTP KO (message conservé dans server/messages/) :', e.message);
+                    console.error('Resend KO (message conservé dans server/messages/) :', e.message);
                 }
             }
             send(res, 200, '{"ok":true}');
