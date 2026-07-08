@@ -103,6 +103,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         html {
+            font-size: 110%;   /* +10 % global : toutes les tailles en rem suivent */
             scroll-behavior: auto;
             /* Réserve l'espace de la scrollbar dès le chargement → aucun reflow
                (ni resize du canvas 3D) au moment où le scroll se réactive
@@ -122,7 +123,7 @@
         }
         body {
             font-family: var(--font-body);
-            font-size: 17px;
+            font-size: 1.06rem;
             line-height: 1.55;
             background: var(--bg);
             color: var(--fg);
@@ -156,9 +157,11 @@
             position: fixed; inset: 0;
             z-index: 1; pointer-events: none;
             background:
+                /* voile plat léger : le texte blanc gagne en contraste sans
+                   étouffer la texture premium des formes en fond. */
+                linear-gradient(rgba(8,8,12,0.14), rgba(8,8,12,0.14)),
                 radial-gradient(ellipse 90% 70% at 50% 100%, rgba(8,8,12,.7) 0%, transparent 60%),
                 radial-gradient(ellipse 80% 50% at 50% 0%, rgba(8,8,12,.6) 0%, transparent 55%),
-                /* léger vignettage horizontal pour aider les services en sticky scroll */
                 linear-gradient(to right, rgba(8,8,12,.25) 0%, transparent 18%, transparent 82%, rgba(8,8,12,.25) 100%);
         }
         .grain {
@@ -197,9 +200,9 @@
         /* Header monopo : intégré au fond (transparent), se masque au scroll bas */
         .nav.hidden { transform: translateY(-115%); opacity: 0; pointer-events: none; }
         .nav.scrolled {
-            background: rgba(8,8,12,.65);
-            backdrop-filter: blur(20px) saturate(140%);
-            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            background: rgba(8,8,12,.72);
+            backdrop-filter: blur(12px) saturate(130%);
+            -webkit-backdrop-filter: blur(12px) saturate(130%);
             border-bottom: 1px solid var(--border);
             padding-top: 1.1rem; padding-bottom: 1.1rem;
         }
@@ -821,6 +824,30 @@
             height: 2px; border-radius: 2px;
             background: var(--gradient);
             box-shadow: 0 0 10px rgba(56,189,248,.5);
+            transform-origin: 0 50%;
+            animation: tabUnderline .5s var(--ease-out);
+        }
+        @keyframes tabUnderline { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        /* Barre « chargement » sous les onglets : elle balaie à chaque
+           changement de catégorie → le carrousel prend vie. */
+        .svc-load {
+            position: absolute; left: 10%; right: 10%; bottom: -8px;
+            height: 2px; border-radius: 2px;
+            overflow: hidden; pointer-events: none;
+        }
+        .svc-load::before {
+            content: ''; display: block; height: 100%;
+            border-radius: inherit;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: 0 50%;
+            opacity: 0;
+        }
+        .svc-tabs.loading .svc-load::before { animation: svcLoad .6s var(--ease-out); }
+        @keyframes svcLoad {
+            0%   { transform: scaleX(0); opacity: 1; }
+            72%  { transform: scaleX(1); opacity: 1; }
+            100% { transform: scaleX(1); opacity: 0; }
         }
 
         /* ── Panneaux : empilés dans la même cellule, fondu + glissé ── */
@@ -924,7 +951,10 @@
             font-size: 0.64rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.09em;
             color: var(--bg); background: var(--gradient);
-            padding: 0.3rem 0.72rem; border-radius: 2rem; white-space: nowrap;
+            padding: 0.3rem 0.72rem; border-radius: 2rem;
+            /* peut passer sur 2 lignes : ne déborde JAMAIS de l'écran */
+            white-space: normal; text-align: center;
+            max-width: 100%; line-height: 1.35;
         }
 
         /* CTA des panneaux — même langage « crystal » que le bouton du hero
@@ -952,19 +982,21 @@
         .holo-cta .btn-arrow { transition: transform .3s var(--ease); }
         .holo-cta:hover .btn-arrow { transform: translateX(4px); }
 
-        /* Mobile : lecture verticale — titre, illustration, texte, prix, CTA */
+        /* Mobile : lecture verticale — titre, illustration, PRIX (visible sans
+           scroller), puis texte et CTA. Le titre se suffit : pas d'eyebrow. */
         @media (max-width: 900px) {
+            .services-header .eyebrow { display: none; }
             .svc-tabs { width: 100%; justify-content: space-between; }
             .svc-tab { flex: 1 1 0; padding: 0.6rem 0.4rem 0.68rem; font-size: 0.78rem; }
             .svc-inner { display: flex; flex-direction: column; text-align: center; gap: 1.05rem; }
             .holo-text { display: contents; }
             .holo-name  { order: 1; }
             .holo-title { order: 2; max-width: 100%; }
-            .holo-art   { order: 3; margin: 0.5rem 0; }
-            .holo-body  { order: 4; max-width: 100%; }
-            .holo-list  { order: 5; grid-template-columns: 1fr; gap: 0.55rem;
+            .holo-art   { order: 3; margin: 0.3rem 0 0; }
+            .svc-price  { order: 4; justify-content: center; margin-top: 0; }
+            .holo-body  { order: 5; max-width: 100%; }
+            .holo-list  { order: 6; grid-template-columns: 1fr; gap: 0.55rem;
                           width: fit-content; margin: 0 auto; text-align: left; }
-            .svc-price  { order: 6; justify-content: center; }
             .holo-cta   { order: 7; margin: 0.4rem auto 0; }
         }
 
@@ -1310,21 +1342,68 @@
                vague » (l'ancien cadre vitré était jugé peu élégant). */
         }
         /* ── Formulaire de contact — verre dépoli léger, sans grosse boîte ── */
-        /* ── Réservation directe (Cal.com) au-dessus du formulaire ── */
-        .contact-cal { margin-top: 0.2rem; }
-        .contact-or {
-            width: 100%; max-width: 560px;
-            display: flex; align-items: center; gap: 0.9rem;
-            font-family: var(--font-body);
-            font-size: 0.82rem; color: var(--fg-dim);
-            text-shadow: var(--text-shadow);
-            margin: 0.2rem auto -0.7rem;
+        /* ── DOUBLE CHOIX contact : switch carrousel minimaliste ── */
+        .contact-switch {
+            position: relative;
+            display: inline-flex;
+            margin: 0.4rem auto 0.2rem;
+            padding: 0.32rem;
+            border-radius: 3rem;
+            background: rgba(255,255,255,0.045);
+            border: 1px solid var(--border-strong);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+        }
+        .cs-tab {
+            position: relative; z-index: 2;
+            border: none; cursor: pointer; background: transparent;
+            font-family: var(--font-title); font-weight: 600;
+            font-size: 0.88rem; letter-spacing: 0.01em;
+            color: var(--fg-muted);
+            padding: 0.65rem 1.4rem; border-radius: 3rem;
+            transition: color .35s var(--ease);
             white-space: nowrap;
         }
-        .contact-or::before, .contact-or::after {
-            content: ''; flex: 1; height: 1px;
-            background: var(--border-strong);
+        .cs-tab.is-active { color: var(--fg-strong); }
+        /* pastille glissante sous l'onglet actif */
+        .cs-thumb {
+            position: absolute; top: 0.32rem; bottom: 0.32rem; left: 0.32rem;
+            width: calc(50% - 0.32rem); z-index: 1;
+            border-radius: 3rem;
+            background: rgba(255,255,255,0.09);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 6px 20px -8px rgba(56,189,248,0.5);
+            transition: transform .45s var(--ease-spring);
         }
+        .contact-switch.on-form .cs-thumb { transform: translateX(100%); }
+        /* pile des panneaux : un seul visible, transition en glissé/fondu */
+        .contact-stack {
+            position: relative;
+            width: 100%; max-width: 560px; margin: 0.6rem auto 0;
+            display: grid;
+        }
+        .contact-panel {
+            grid-area: 1 / 1;
+            opacity: 0; visibility: hidden;
+            transform: translateX(24px);
+            transition: opacity .45s var(--ease-out), transform .5s var(--ease-out), visibility 0s linear .5s;
+            pointer-events: none;
+        }
+        .contact-panel:not(.is-active) { position: relative; }
+        .contact-panel.is-active {
+            opacity: 1; visibility: visible; transform: none;
+            transition: opacity .45s var(--ease-out) .08s, transform .5s var(--ease-out) .08s, visibility 0s;
+            pointer-events: auto;
+        }
+        .contact-panel[data-panel="cal"] {
+            display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+            padding: 1.4rem 0 0.4rem;
+        }
+        .contact-panel-lead {
+            font-family: var(--font-body); font-size: 1rem; line-height: 1.6;
+            color: var(--fg-muted); max-width: 42ch; text-align: center;
+            text-shadow: var(--text-shadow);
+        }
+        .contact-cal { margin: 0; }
         .contact-form {
             width: 100%; max-width: 560px;
             margin: 0.4rem auto 0;
@@ -1839,7 +1918,8 @@
             animation: linkFlow 1.1s linear infinite;
         }
         @media (max-width: 900px) {
-            .art-svg { width: min(72%, 320px); }
+            /* Illustration plus compacte → le prix reste visible sans scroller */
+            .art-svg { width: min(58%, 260px); }
         }
 
         /* ── AUDIT — loupe holographique qui scanne un champ de données ── */
@@ -1938,49 +2018,89 @@
         .stat-label strong, .step-desc strong {
             font-weight: 720;
         }
+
+        /* ════════════════════════════════════════════════════
+           MOBILE — LISIBILITÉ
+           Un léger voile sombre supplémentaire (les formes restent bien
+           visibles), des gris éclaircis et des textes un peu plus grands.
+           ════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            :root {
+                --fg-muted: #d4d5dd;
+                --fg-dim:   #a7a8b3;
+            }
+            .veil {
+                background:
+                    linear-gradient(rgba(8,8,12,0.20), rgba(8,8,12,0.20)),
+                    radial-gradient(ellipse 90% 70% at 50% 100%, rgba(8,8,12,.7) 0%, transparent 60%),
+                    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(8,8,12,.6) 0%, transparent 55%);
+            }
+            body { font-size: 1.09rem; }
+            .body-text { font-size: 1.05rem; }
+            .holo-body { font-size: 1rem; }
+            .holo-list li { font-size: 0.94rem; }
+            .uc-tag { font-size: 0.74rem; }
+            .uc-text { font-size: 1rem; }
+            .uc-points li { font-size: 0.95rem; }
+            .stat-label { font-size: 0.98rem; }
+            .step-desc { font-size: 1rem; }
+            .founder-bio { font-size: 0.98rem; }
+            .contact-point-desc { font-size: 0.93rem; }
+            .faq-item summary { font-size: 1.06rem; }
+            .faq-a { font-size: 1rem; }
+        }
     </style>
 
     <style>
     /* ═══════════════ CAS D'USAGE — bandeaux « rideau numérique » ═══════════════
-       Les 3 cas apparaissent l'un après l'autre, révélés de gauche à droite
-       par un rideau holographique (clip-path) suivi d'un fin liseré lumineux. */
-    .usecases { padding: clamp(5rem, 12vh, 9rem) 0; position: relative; z-index: 10; }
+       Les 3 cas apparaissent l'un après l'autre, chaque bandeau « tiré comme un
+       rideau » DEPUIS LA DROITE (le contenu se dévoile de droite à gauche),
+       sur un panneau translucide, suivi d'un fin liseré lumineux. */
+    .usecases { padding: clamp(5rem, 12vh, 9rem) var(--pad-x); position: relative; z-index: 10; }
     .uc-header { text-align: center; max-width: 60ch; margin: 0 auto clamp(2.2rem, 5vh, 3.2rem); }
     .uc-header .eyebrow { display: block; margin-bottom: 1rem; }
-    .uc-grid { display: flex; flex-direction: column; max-width: 1020px; margin: 0 auto; }
+    .uc-grid {
+        display: flex; flex-direction: column; max-width: 1020px; margin: 0 auto;
+        gap: 0.9rem;
+    }
     .uc-card {
         display: grid;
         grid-template-columns: clamp(120px, 14vw, 160px) minmax(0, 1.15fr) minmax(0, 0.85fr);
         gap: clamp(1.2rem, 3vw, 2.6rem);
         align-items: center;
-        padding: clamp(1.5rem, 3.2vh, 2.1rem) clamp(0.4rem, 1.5vw, 1.2rem);
-        border-top: 1px solid var(--border);
+        padding: clamp(1.4rem, 3vh, 2rem) clamp(1.2rem, 2.4vw, 2rem);
         position: relative;
         text-align: left;
-        /* rideau fermé tant que la section n'est pas à l'écran (.curtain) */
-        -webkit-clip-path: inset(0 100% 0 0);
-        clip-path: inset(0 100% 0 0);
+        /* fond translucide « verre » design */
+        border-radius: 18px;
+        background: linear-gradient(115deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018));
+        border: 1px solid var(--border);
+        -webkit-backdrop-filter: blur(10px) saturate(125%);
+        backdrop-filter: blur(10px) saturate(125%);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+        /* rideau fermé (dévoilé depuis la droite) tant que hors écran */
+        -webkit-clip-path: inset(0 0 0 100%);
+        clip-path: inset(0 0 0 100%);
     }
-    .uc-card:last-child { border-bottom: 1px solid var(--border); }
-    /* liseré lumineux qui suit le bord du rideau (même timing que le clip) */
+    /* liseré lumineux qui suit le bord du rideau, du côté droit vers la gauche */
     .uc-card::after {
-        content: ''; position: absolute; top: 8%; bottom: 8%; left: 100%;
+        content: ''; position: absolute; top: 8%; bottom: 8%; left: 0;
         width: 2px; border-radius: 2px;
-        background: linear-gradient(180deg, transparent, rgba(125,211,252,.85) 30%, rgba(129,140,248,.85) 70%, transparent);
+        background: linear-gradient(180deg, transparent, rgba(125,211,252,.9) 30%, rgba(129,140,248,.9) 70%, transparent);
         opacity: 0; pointer-events: none;
     }
-    .uc-grid.curtain .uc-card { animation: ucCurtain .9s var(--ease-out) both; }
-    .uc-grid.curtain .uc-card::after { animation: ucSweep .9s var(--ease-out) both; }
-    .uc-grid.curtain .uc-card:nth-child(2), .uc-grid.curtain .uc-card:nth-child(2)::after { animation-delay: .45s; }
-    .uc-grid.curtain .uc-card:nth-child(3), .uc-grid.curtain .uc-card:nth-child(3)::after { animation-delay: .9s; }
+    .uc-grid.curtain .uc-card { animation: ucCurtain .95s var(--ease-out) both; }
+    .uc-grid.curtain .uc-card::after { animation: ucSweep .95s var(--ease-out) both; }
+    .uc-grid.curtain .uc-card:nth-child(2), .uc-grid.curtain .uc-card:nth-child(2)::after { animation-delay: .5s; }
+    .uc-grid.curtain .uc-card:nth-child(3), .uc-grid.curtain .uc-card:nth-child(3)::after { animation-delay: 1s; }
     @keyframes ucCurtain {
-        from { -webkit-clip-path: inset(0 100% 0 0); clip-path: inset(0 100% 0 0); }
+        from { -webkit-clip-path: inset(0 0 0 100%); clip-path: inset(0 0 0 100%); }
         to   { -webkit-clip-path: inset(0 0 0 0);    clip-path: inset(0 0 0 0); }
     }
     @keyframes ucSweep {
-        0%   { left: 0%; opacity: 1; }
+        0%   { left: 100%; opacity: 1; }
         88%  { opacity: 1; }
-        100% { left: 100%; opacity: 0; }
+        100% { left: 0%; opacity: 0; }
     }
     .uc-tag {
         font-family: var(--font-title); font-size: 0.7rem; font-weight: 600;
@@ -2011,7 +2131,7 @@
     }
 
     /* ═══════════════ FAQ (SEO) ═══════════════ */
-    .faq { padding: clamp(5rem, 12vh, 9rem) 0; position: relative; z-index: 10; }
+    .faq { padding: clamp(5rem, 12vh, 9rem) var(--pad-x); position: relative; z-index: 10; }
     .faq-header { text-align: center; max-width: 56ch; margin: 0 auto clamp(2.4rem, 5vh, 3.4rem); }
     /* Titre FAQ : réduit & épuré (style premium 2026, plus minimaliste que les blocs). */
     .faq-header h2 { font-size: clamp(1.5rem, 2.5vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; }
@@ -2043,12 +2163,12 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        {"@type":"Question","name":"Combien coûte un site web ?","acceptedAnswer":{"@type":"Answer","text":"Nos sites démarrent entre 1 000 € et 2 000 € pour les premiers prix, ou une formule à partir de 120 €/mois, selon le nombre de pages et les fonctionnalités. Devis clair et détaillé après un premier échange gratuit, sans engagement."}},
-        {"@type":"Question","name":"Pouvez-vous former nos équipes à l'IA ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Nous formons les équipes à l'intelligence artificielle sur leurs propres cas d'usage, et nous développons des CRM et SaaS sur mesure quand un outil du marché ne suffit pas."}},
-        {"@type":"Question","name":"Comment se déroule un premier échange ?","acceptedAnswer":{"@type":"Answer","text":"En 30 minutes, nous identifions ensemble vos tâches automatisables et vos gains potentiels. C'est gratuit et sans engagement. Le créneau se réserve directement en ligne sur ia-studio.fr."}},
-        {"@type":"Question","name":"Combien de temps avant de voir des résultats ?","acceptedAnswer":{"@type":"Answer","text":"La plupart de nos clients voient des résultats mesurables dès les premières semaines. Nous livrons par itérations : une première brique utile rapidement, puis on améliore en continu."}},
-        {"@type":"Question","name":"Faut-il être technique pour travailler avec vous ?","acceptedAnswer":{"@type":"Answer","text":"Non. Notre rôle est de faire le pont entre la technologie et votre métier, sans jargon."}},
-        {"@type":"Question","name":"Mes données sont-elles en sécurité ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Chaque solution est conçue dans le respect de la confidentialité et du RGPD, avec des outils et hébergements adaptés à la sensibilité de vos données."}}
+        {"@type":"Question","name":"Puis-je avoir mon site prêt et en ligne en une semaine ?","acceptedAnswer":{"@type":"Answer","text":"Oui — une semaine, c'est la promesse ia studio. On conçoit, on intègre vos contenus et on met en ligne un site rapide et bien référencé en quelques jours."}},
+        {"@type":"Question","name":"Un agent IA peut-il répondre à mes clients 24h/24 ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Nous mettons en place un agent qui répond aux questions, envoie des devis et prend des rendez-vous jour et nuit, connecté à vos outils et formé sur votre activité."}},
+        {"@type":"Question","name":"Pouvez-vous automatiser mes tâches répétitives ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Relances, saisies, e-mails, suivis : on automatise ce qui fait perdre du temps, autour de vos outils actuels. En moyenne 12 h gagnées par semaine et par salarié."}},
+        {"@type":"Question","name":"Pouvez-vous former mes équipes à l'IA ?","acceptedAnswer":{"@type":"Answer","text":"Oui, sur vos propres cas d'usage. Nous développons aussi des CRM et SaaS sur mesure quand aucun outil du marché ne suffit."}},
+        {"@type":"Question","name":"Est-ce accessible même sans compétence technique ?","acceptedAnswer":{"@type":"Answer","text":"Oui, c'est tout notre métier. On fait le pont entre la technologie et votre activité, sans jargon, avec un interlocuteur unique."}},
+        {"@type":"Question","name":"Mes données resteront-elles en sécurité ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Chaque solution est conçue dans le respect du RGPD, avec des outils et hébergements adaptés à la sensibilité de vos données."}}
       ]
     }
     </script>
@@ -2142,50 +2262,6 @@
     </section>
 
     <!-- ═══════════════ CAS D'USAGE CONCRETS ═══════════════ -->
-    <section class="usecases" id="cas-usage">
-        <div class="wrap">
-            <div class="uc-header">
-                <span class="eyebrow">Cas d'usage concrets</span>
-                <h2 class="title-lg">Ce que l'IA change, <span class="gradient">concrètement.</span></h2>
-                <p class="body-text" style="text-align:center;">Trois exemples simples de ce que l'IA peut faire pour vous, dès aujourd'hui.</p>
-            </div>
-            <div class="uc-grid">
-                <article class="uc-card">
-                    <span class="uc-tag">Un site web</span>
-                    <div class="uc-main">
-                        <h3 class="uc-title">Un site qui vous amène des clients</h3>
-                        <p class="uc-text">Un site clair et rapide, bien placé sur Google, qui donne envie de vous contacter.</p>
-                    </div>
-                    <ul class="uc-points">
-                        <li>Visible quand on vous cherche</li>
-                        <li>Transforme les visiteurs en clients</li>
-                    </ul>
-                </article>
-                <article class="uc-card">
-                    <span class="uc-tag">Un agent IA</span>
-                    <div class="uc-main">
-                        <h3 class="uc-title">Un agent qui répond pour vous</h3>
-                        <p class="uc-text">Il gère vos clients tout de suite — questions, devis, rendez-vous — et agit à votre place, même quand vous êtes occupé.</p>
-                    </div>
-                    <ul class="uc-points">
-                        <li>Disponible jour et nuit</li>
-                        <li>Plus aucune demande sans réponse</li>
-                    </ul>
-                </article>
-                <article class="uc-card">
-                    <span class="uc-tag">Une appli</span>
-                    <div class="uc-main">
-                        <h3 class="uc-title">Une appli sur mesure</h3>
-                        <p class="uc-text">Une application simple, pensée pour votre métier, sur mobile comme sur ordinateur.</p>
-                    </div>
-                    <ul class="uc-points">
-                        <li>Facile à utiliser au quotidien</li>
-                        <li>Conçue autour de vos besoins</li>
-                    </ul>
-                </article>
-            </div>
-        </div>
-    </section>
 
     <!-- ═══════════════ 3. NOS EXPERTISES — « TROIS FAÇONS DE VOUS AIDER » ═══════════════ -->
     <section class="services-sec" id="services">
@@ -2198,6 +2274,7 @@
                 <button class="svc-tab is-active" role="tab" aria-selected="true" data-idx="0">Audit</button>
                 <button class="svc-tab" role="tab" aria-selected="false" data-idx="1">Sites &amp; apps</button>
                 <button class="svc-tab" role="tab" aria-selected="false" data-idx="2">Automatisation</button>
+                <span class="svc-load" aria-hidden="true"></span>
             </div>
             <div class="svc-viewport" id="svc-viewport">
 
@@ -2446,6 +2523,51 @@
         </div>
     </section>
 
+    <section class="usecases" id="cas-usage">
+        <div class="wrap">
+            <div class="uc-header">
+                <span class="eyebrow">Cas d'usage concrets</span>
+                <h2 class="title-lg">Ce que l'IA change, <span class="gradient">concrètement.</span></h2>
+                <p class="body-text" style="text-align:center;">Trois exemples simples de ce que l'IA peut faire pour vous, dès aujourd'hui.</p>
+            </div>
+            <div class="uc-grid">
+                <article class="uc-card">
+                    <span class="uc-tag">Un site web</span>
+                    <div class="uc-main">
+                        <h3 class="uc-title">Un site qui vous amène des clients</h3>
+                        <p class="uc-text">Un site clair et rapide, bien placé sur Google, qui donne envie de vous contacter.</p>
+                    </div>
+                    <ul class="uc-points">
+                        <li>Visible quand on vous cherche</li>
+                        <li>Transforme les visiteurs en clients</li>
+                    </ul>
+                </article>
+                <article class="uc-card">
+                    <span class="uc-tag">Un agent IA</span>
+                    <div class="uc-main">
+                        <h3 class="uc-title">Un agent qui répond pour vous</h3>
+                        <p class="uc-text">Il gère vos clients tout de suite — questions, devis, rendez-vous — et agit à votre place, même quand vous êtes occupé.</p>
+                    </div>
+                    <ul class="uc-points">
+                        <li>Disponible jour et nuit</li>
+                        <li>Plus aucune demande sans réponse</li>
+                    </ul>
+                </article>
+                <article class="uc-card">
+                    <span class="uc-tag">Une appli</span>
+                    <div class="uc-main">
+                        <h3 class="uc-title">Une appli sur mesure</h3>
+                        <p class="uc-text">Une application simple, pensée pour votre métier, sur mobile comme sur ordinateur.</p>
+                    </div>
+                    <ul class="uc-points">
+                        <li>Facile à utiliser au quotidien</li>
+                        <li>Conçue autour de vos besoins</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
     <section class="reviews" id="reviews">
         <div class="wrap">
             <div class="reviews-header">
@@ -2550,28 +2672,28 @@
             </div>
             <div class="faq-list">
                 <details class="faq-item reveal">
-                    <summary>Combien coûte un site web&nbsp;?</summary>
-                    <div class="faq-a">Nos sites démarrent <strong>entre 1&nbsp;000&nbsp;€ et 2&nbsp;000&nbsp;€</strong> pour les premiers prix — ou une <strong>formule à partir de 120&nbsp;€/mois</strong> — selon le nombre de pages et les fonctionnalités. Vous recevez un <strong>devis clair et détaillé</strong> après un premier échange gratuit — vous savez exactement ce que vous payez avant de commencer.</div>
+                    <summary>Puis-je avoir mon site prêt et en ligne en une semaine&nbsp;?</summary>
+                    <div class="faq-a"><strong>Oui — une semaine, c'est la promesse ia studio.</strong> On conçoit, on intègre vos contenus et on met en ligne un site rapide et bien référencé en quelques jours. Vous voyez avancer votre projet dès le premier jour.</div>
                 </details>
                 <details class="faq-item reveal">
-                    <summary>Pouvez-vous former nos équipes à l'IA&nbsp;?</summary>
-                    <div class="faq-a">Oui. Nous <strong>formons vos équipes à l'intelligence artificielle</strong> sur vos propres cas d'usage : les bons réflexes, les bons outils, et une vraie autonomie dès la fin de la formation. Nous développons aussi des <strong>CRM et SaaS sur mesure</strong> quand un outil du marché ne suffit pas.</div>
+                    <summary>Un agent IA peut-il répondre à mes clients 24h/24&nbsp;?</summary>
+                    <div class="faq-a"><strong>Oui, c'est exactement ce qu'on met en place.</strong> Un agent qui répond aux questions, envoie des devis et prend des rendez-vous jour et nuit — connecté à vos outils, formé sur votre activité. Plus aucune demande sans réponse.</div>
                 </details>
                 <details class="faq-item reveal">
-                    <summary>Comment se déroule un premier échange&nbsp;?</summary>
-                    <div class="faq-a">En 30 minutes, nous identifions ensemble vos tâches automatisables et vos gains potentiels. <strong>C'est gratuit et sans engagement</strong> : vous repartez avec une vision claire de ce que l'IA peut vous apporter, que vous travailliez avec nous ou non. Vous pouvez <strong>réserver votre créneau directement en ligne</strong> depuis la page contact.</div>
+                    <summary>Pouvez-vous automatiser mes tâches répétitives&nbsp;?</summary>
+                    <div class="faq-a"><strong>Oui, et c'est souvent le gain le plus rapide.</strong> Relances, saisies, e-mails, suivis : on automatise ce qui vous fait perdre du temps, autour des outils que vous utilisez déjà. En moyenne <strong>12&nbsp;h gagnées par semaine et par salarié.</strong></div>
                 </details>
                 <details class="faq-item reveal">
-                    <summary>Combien de temps avant de voir des résultats&nbsp;?</summary>
-                    <div class="faq-a">La plupart de nos clients voient des <strong>résultats mesurables dès les premières semaines</strong>. On livre d'abord un premier résultat utile, vite. Puis on améliore en continu — pas de grand projet « tout ou rien ».</div>
+                    <summary>Pouvez-vous former mes équipes à l'IA&nbsp;?</summary>
+                    <div class="faq-a"><strong>Oui, sur vos propres cas d'usage.</strong> Les bons réflexes, les bons outils, une vraie autonomie dès la fin de la formation. On développe aussi des <strong>CRM et SaaS sur mesure</strong> quand aucun outil du marché ne suffit.</div>
                 </details>
                 <details class="faq-item reveal">
-                    <summary>Faut-il être « technique » pour travailler avec vous&nbsp;?</summary>
-                    <div class="faq-a">Non. <strong>C'est exactement notre rôle de faire le pont</strong> entre la technologie et votre métier. Vous parlez de votre métier ; on s'occupe de tout le reste, sans jargon.</div>
+                    <summary>Est-ce accessible même si je n'y connais rien en technique&nbsp;?</summary>
+                    <div class="faq-a"><strong>Oui — c'est même tout notre métier.</strong> On fait le pont entre la technologie et le vôtre. Vous parlez de votre activité, on s'occupe de tout le reste. Sans jargon, avec un interlocuteur unique.</div>
                 </details>
                 <details class="faq-item reveal">
-                    <summary>Mes données sont-elles en sécurité&nbsp;?</summary>
-                    <div class="faq-a">Oui. Nous concevons chaque solution dans le respect de la confidentialité et du RGPD, en choisissant des outils et des hébergements adaptés à la sensibilité de vos données. <strong>Vos informations restent les vôtres.</strong></div>
+                    <summary>Mes données resteront-elles en sécurité&nbsp;?</summary>
+                    <div class="faq-a"><strong>Oui, entièrement.</strong> Chaque solution est conçue dans le respect du RGPD, avec des outils et des hébergements adaptés à la sensibilité de vos données. <strong>Vos informations restent les vôtres.</strong></div>
                 </details>
             </div>
         </div>
@@ -2584,11 +2706,26 @@
             <p class="body-text" style="text-align:center; max-width: 52ch;">
                 Dites-nous où vous en êtes — on vous répond honnêtement sur ce que l'IA peut faire pour vous.
             </p>
-            <!-- Réservation directe : le calendrier Cal.com s'ouvre par-dessus le site -->
-            <a class="btn btn-primary contact-cal" href="https://cal.com/alexis-ia-studio/30min" target="_blank" rel="noopener"
-               data-cal-link="alexis-ia-studio/30min" data-cal-namespace="30min"
-               data-cal-config='{"layout":"month_view","theme":"dark"}'>Réserver un créneau — 30 min <span class="btn-arrow">→</span></a>
-            <div class="contact-or" aria-hidden="true">ou laissez-nous un message</div>
+
+            <!-- Double choix, carrousel minimaliste : réserver un échange (calendrier)
+                 OU nous écrire (formulaire). Un seul panneau visible à la fois. -->
+            <div class="contact-switch" role="tablist" aria-label="Comment nous contacter">
+                <span class="cs-thumb" aria-hidden="true"></span>
+                <button class="cs-tab is-active" role="tab" aria-selected="true" data-panel="cal">Réserver un échange</button>
+                <button class="cs-tab" role="tab" aria-selected="false" data-panel="form">Nous écrire</button>
+            </div>
+
+            <div class="contact-stack">
+                <!-- Panneau CALENDRIER -->
+                <div class="contact-panel is-active" data-panel="cal">
+                    <p class="contact-panel-lead">Choisissez un créneau — 30 minutes en visio avec un fondateur, gratuit et sans engagement.</p>
+                    <a class="btn btn-primary contact-cal" href="https://cal.com/alexis-ia-studio/30min" target="_blank" rel="noopener"
+                       data-cal-link="alexis-ia-studio/30min" data-cal-namespace="30min"
+                       data-cal-config='{"layout":"month_view","theme":"dark"}'>Ouvrir le calendrier <span class="btn-arrow">→</span></a>
+                </div>
+
+                <!-- Panneau FORMULAIRE -->
+                <div class="contact-panel" data-panel="form">
             <form class="contact-form" id="contact-form" novalidate>
                 <div class="cf-row">
                     <div class="cf-field">
@@ -2617,6 +2754,8 @@
                 <input type="text" name="website" id="cf-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
                 <button class="btn btn-primary" type="submit">Envoyer <span class="btn-arrow">→</span></button>
             </form>
+                </div>
+            </div>
             <div class="contact-points">
                 <div class="contact-point">
                     <span class="contact-point-icon" aria-hidden="true">
@@ -2657,10 +2796,10 @@ import * as THREE from 'three';
 
 const container=document.getElementById('three-canvas');
 const _isMobile=window.innerWidth<768||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const PARTICLE_COUNT=_isMobile?14000:30000;
+const PARTICLE_COUNT=_isMobile?14000:36000;
 
 const renderer=new THREE.WebGLRenderer({antialias:false,alpha:true,powerPreference:'high-performance'});
-const DPR_CAP=_isMobile?1.6:1.75;   /* mobile : un cran sous 1.7 → houle plus fluide sur écrans 3× */
+const DPR_CAP=_isMobile?1.6:2.0;    /* desktop : définition rétina pleine (le gouverneur protège) */
 let _dprScale=1;
 function _applyPR(){
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,DPR_CAP)*_dprScale);
@@ -2669,7 +2808,7 @@ function _applyPR(){
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,DPR_CAP));
 renderer.setSize(window.innerWidth,window.innerHeight);
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=2.5;
+renderer.toneMappingExposure=2.65;
 container.appendChild(renderer.domElement);
 
 const scene=new THREE.Scene();
@@ -2763,7 +2902,7 @@ for(let i=0;i<PARTICLE_COUNT;i++){
   else color=c3.clone().lerp(c4,(ratio-0.67)/0.33);
   colors[i*3]=color.r; colors[i*3+1]=color.g; colors[i*3+2]=color.b;
   /* granulométrie contrastée : beaucoup de fines + quelques grosses (matière) */
-  sizes[i]=0.009+Math.pow(Math.random(),2.1)*0.028; randoms[i]=Math.random();
+  sizes[i]=0.0075+Math.pow(Math.random(),2.3)*0.03; randoms[i]=Math.random();
 }
 geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
 geometry.setAttribute('color',new THREE.BufferAttribute(colors,3));
@@ -2877,10 +3016,10 @@ const material=new THREE.ShaderMaterial({
         vec3 n2=normalize(cross(dAB,n1)+vec3(0.0001));
         float a1=(aRandom-0.5)*2.0;
         float a2=(fract(aRandom*7.31)-0.5)*2.0;
-        pos+=(n1*a1+n2*a2)*tr*0.16;
-        pos+=normalize(pos+vec3(0.0001))*tr*(0.03+0.07*aRandom);
-        pos.xz=rot(tr*0.22*a1)*pos.xz;
-        vColor=mix(vColor,vec3(1.05,1.35,2.05),tr*0.10);
+        pos+=(n1*a1+n2*a2)*tr*0.10;
+        pos+=normalize(pos+vec3(0.0001))*tr*(0.02+0.04*aRandom);
+        pos.xz=rot(tr*0.12*a1)*pos.xz;
+        vColor=mix(vColor,vec3(1.05,1.35,2.05),tr*0.06);
       }
 
       /* respiration fine des particules */
@@ -2919,10 +3058,10 @@ const material=new THREE.ShaderMaterial({
         /* grain : cœur net + halo court (moins de flou laiteux) */
         float d=length(pc);
         if(d>0.5)discard;
-        float soft=smoothstep(0.5,0.10,d);
-        float core=smoothstep(0.20,0.035,d);
-        alpha=(soft*0.50+core*0.95)*vAlpha;
-        col=vColor*(1.85+core*2.0);
+        float soft=smoothstep(0.5,0.09,d);
+        float core=smoothstep(0.18,0.03,d);
+        alpha=(soft*0.5+core*1.0)*vAlpha;
+        col=vColor*(2.0+core*2.3);
       }
       gl_FragColor=vec4(col,alpha);
     }`,
@@ -2932,8 +3071,8 @@ const particles=new THREE.Points(geometry,material);
 scene.add(particles);
 
 /* ── Séquence des formes au scroll : paliers courts + morphs LONGS (bien visibles) ── */
-/* fenêtres de morph courtes mais respirantes → transitions vives ET fluides */
-const KF=[[0.00,2],[0.06,2],[0.21,0],[0.32,0],[0.47,3],[0.61,3],[0.73,2],[0.81,2],[1.00,2]];
+/* fenêtres de morph allongées → transition posée, jamais pressée */
+const KF=[[0.00,2],[0.05,2],[0.22,0],[0.31,0],[0.47,3],[0.61,3],[0.75,2],[0.83,2],[1.00,2]];
 /* cadrages caméra par forme : [z, y, lookY, fov, scale] */
 const CAMS=[
   [_isMobile?4.2:3.1, 0.70, -0.05, 56, _isMobile?1.05:1.30],  /* magma (nappe immersive) */
@@ -3018,7 +3157,7 @@ function frame(){
   /* formes : uniforms shape (uMix lissé pour absorber les scrolls brutaux) */
   material.uniforms.uShapeA.value=target.a;
   material.uniforms.uShapeB.value=target.b;
-  cur.mix+=(target.mix-cur.mix)*_k(0.065);
+  cur.mix+=(target.mix-cur.mix)*_k(0.05);   /* morph doux et étiré */
   material.uniforms.uMix.value=(target.a===target.b)?target.mix:cur.mix;
 
   /* flash d'exposition ponctuel (API _iaV2.flashExposure) */
@@ -3123,11 +3262,12 @@ if (document.fonts && document.fonts.load) {
 
 // ── LENIS ──
 const lenis = new Lenis({
-    duration: 1.2,
+    duration: 1.55,                 /* défilement plus posé : la visite respire */
     easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
     smoothTouch: false,
-    touchMultiplier: 1.6
+    wheelMultiplier: 0.9,
+    touchMultiplier: 1.15
 });
 window._lenis = lenis;
 // Lenis piloté par le ticker GSAP → Lenis, ScrollTrigger et les tweens
@@ -3404,6 +3544,26 @@ setupReveal('.presence-text h2', 50, 0.4);
 
 // ── Formulaire de contact : sans back-end, on compose un e-mail pré-rempli
 //    (prénom, email, projet) vers bonjour@ia-studio.fr à l'envoi. ──
+// ══════════════════════════════════════
+//  CONTACT — double choix : réserver un échange / nous écrire
+// ══════════════════════════════════════
+(function initContactSwitch() {
+    const sw = document.querySelector('.contact-switch');
+    if (!sw) return;
+    const tabs = Array.from(sw.querySelectorAll('.cs-tab'));
+    const panels = Array.from(document.querySelectorAll('.contact-panel'));
+    function select(name) {
+        tabs.forEach(t => {
+            const on = t.dataset.panel === name;
+            t.classList.toggle('is-active', on);
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        panels.forEach(pn => pn.classList.toggle('is-active', pn.dataset.panel === name));
+        sw.classList.toggle('on-form', name === 'form');
+    }
+    tabs.forEach(t => t.addEventListener('click', () => select(t.dataset.panel)));
+})();
+
 (function setupContactForm() {
     const form = document.getElementById('contact-form');
     if (!form) return;
@@ -3459,11 +3619,19 @@ document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
 // Filet de sécurité : si l'IntersectionObserver ne se déclenche pas (onglet en
 // arrière-plan au chargement, rendu suspendu…), on révèle les blocs au scroll
 // dès qu'ils entrent dans la fenêtre — l'animation d'apparition reste préservée.
+let _rfPending = false, _rfDone = false;
 function _revealFallback() {
-    const vh = window.innerHeight;
-    document.querySelectorAll('.reveal:not(.in)').forEach(el => {
-        const r = el.getBoundingClientRect();
-        if (r.top < vh * 0.85 && r.bottom > 0) el.classList.add('in');
+    if (_rfDone || _rfPending) return;
+    _rfPending = true;
+    requestAnimationFrame(() => {
+        _rfPending = false;
+        const rest = document.querySelectorAll('.reveal:not(.in)');
+        if (!rest.length) { _rfDone = true; window.removeEventListener('scroll', _revealFallback); return; }
+        const vh = window.innerHeight;
+        rest.forEach(el => {
+            const r = el.getBoundingClientRect();
+            if (r.top < vh * 0.85 && r.bottom > 0) el.classList.add('in');
+        });
     });
 }
 window.addEventListener('scroll', _revealFallback, { passive: true });
@@ -3755,14 +3923,23 @@ setTimeout(updateScene, 100);
     if (!viewport) return;
     const panels = Array.from(viewport.querySelectorAll('.svc-panel'));
     const tabs = Array.from(document.querySelectorAll('.svc-tab'));
+    const tabsBox = document.querySelector('.svc-tabs');
     let cur = 0;
     function goTo(i) {
-        cur = ((i % panels.length) + panels.length) % panels.length;
+        const next = ((i % panels.length) + panels.length) % panels.length;
+        if (next === cur) return;
+        cur = next;
         panels.forEach((pn, n) => pn.classList.toggle('is-active', n === cur));
         tabs.forEach((tb, n) => {
             tb.classList.toggle('is-active', n === cur);
             tb.setAttribute('aria-selected', n === cur ? 'true' : 'false');
         });
+        // barre « chargement » sous les onglets : rejouée à chaque changement
+        if (tabsBox) {
+            tabsBox.classList.remove('loading');
+            void tabsBox.offsetWidth;   // force le redémarrage de l'animation
+            tabsBox.classList.add('loading');
+        }
     }
     tabs.forEach(tb => tb.addEventListener('click', () => goTo(+tb.dataset.idx)));
     let swX = 0;

@@ -139,19 +139,23 @@
             margin-top: 0.9rem;
             text-shadow: 0 2px 24px rgba(8,8,12,.9);
         }
+        /* Même dégradé animé que sur la page d'accueil (palette du haut de
+           page), sans text-shadow : l'ombre héritée traversait le remplissage
+           transparent et « délavait » le mot. */
         .gradient {
             background: linear-gradient(
                 110deg,
-                var(--accent) 0%,
-                var(--accent-2) 30%,
+                #38bdf8 0%,
+                #bfdbfe 30%,
                 #a78bfa 50%,
-                var(--accent-2) 70%,
-                var(--accent-3) 100%
+                #bfdbfe 70%,
+                #818cf8 100%
             );
             background-size: 200% 100%;
             -webkit-background-clip: text; background-clip: text;
             -webkit-text-fill-color: transparent; color: transparent;
             animation: gradShimmer 8s ease-in-out infinite;
+            text-shadow: none;
         }
         @keyframes gradShimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .page-sub {
@@ -330,26 +334,74 @@
         .orbit-card { opacity: 0; transition: opacity .8s var(--ease-out); }
         body.ready .orbit-card { opacity: 1; }
 
-        /* ════ MOBILE : grille flottante (l'orbite demande de l'espace) ════ */
+        /* ════ MOBILE : CARROUSEL 3D — les 4 sites tournent autour d'un axe.
+           L'écran principal est devant, en grand ; les autres attendent
+           derrière. Balayage ← → pour tourner, appui pour ouvrir. ════ */
         @media (max-width: 900px) {
-            .stage { min-height: auto; padding-bottom: 4rem; }
+            .stage { min-height: auto; padding-bottom: 2.5rem; }
             #three-canvas { position: fixed; height: 100vh; opacity: .8; }
             .page-hint { display: none; }
+            .page-head { padding-bottom: 0; }
             .orbit-field {
                 position: relative; inset: auto;
-                display: grid; grid-template-columns: 1fr 1fr;
-                gap: 3.2rem 1rem;
-                justify-items: center; align-items: center;
-                padding: 44vh var(--pad-x) 0;
+                height: min(60vw, 310px);
+                margin-top: clamp(2.4rem, 7vh, 4.5rem);
+                perspective: 950px;
+                touch-action: pan-y;
             }
-            .orbit-card { position: relative; transform: none !important; opacity: 1 !important; filter: none !important; z-index: 10 !important; animation: floatCard 6s ease-in-out infinite; }
-            .orbit-card:nth-child(2n)  { animation-delay: 1.6s; }
-            .orbit-card:nth-child(3n)  { animation-delay: 3.1s; }
-            @keyframes floatCard { 0%,100% { translate: 0 0; } 50% { translate: 0 -8px; } }
-            .shot { width: min(42vw, 250px) !important; height: auto !important; aspect-ratio: 1280/800; }
+            .orbit-card {
+                position: absolute; top: 50%; left: 50%;
+                width: min(74vw, 350px);
+                transition: transform .65s var(--ease), opacity .65s var(--ease), filter .65s var(--ease);
+                opacity: 1;
+                will-change: transform;
+            }
+            .shot { width: 100% !important; height: auto !important; aspect-ratio: 1280/800; }
             .shot iframe.preview { display: none; }
             .shot img.preview-img { animation: none; }
             .card-tag { display: none; }
+            .orbit-card.is-front .card-inner {
+                border-color: rgba(56,189,248,.45);
+                box-shadow: 0 26px 70px -22px rgba(0,0,0,.9), 0 0 34px -6px rgba(56,189,248,.3);
+            }
+            /* légende + points sous le carrousel */
+            .mob-caption {
+                margin: 1.5rem auto 0; text-align: center;
+                display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+                padding: 0 var(--pad-x);
+            }
+            .mob-title {
+                font-family: var(--font-title); font-weight: 700;
+                font-size: 1.05rem; letter-spacing: -0.01em; color: var(--fg-strong);
+                display: inline-flex; align-items: center; gap: 0.45rem;
+            }
+            .mob-title .arrow { color: var(--accent); }
+            .mob-sub { font-size: 0.78rem; color: var(--fg-dim); }
+            .mob-dots { display: flex; gap: 7px; margin-top: 0.55rem; }
+            .mob-dot {
+                width: 20px; height: 3px; border-radius: 2px; border: none; padding: 0;
+                background: rgba(255,255,255,0.16); cursor: pointer;
+                transition: background .4s var(--ease), box-shadow .4s var(--ease);
+            }
+            .mob-dot.on { background: var(--gradient); box-shadow: 0 0 8px rgba(56,189,248,.4); }
+        }
+        @media (min-width: 901px) {
+            .mob-caption { display: none !important; }
+        }
+        /* ── MOBILE — LISIBILITÉ : voile léger + gris éclaircis (cohérent accueil) ── */
+        @media (max-width: 768px) {
+            :root {
+                --fg-muted: #d4d5dd;
+                --fg-dim:   #a7a8b3;
+            }
+            .veil {
+                background:
+                    linear-gradient(rgba(8,8,12,0.18), rgba(8,8,12,0.18)),
+                    radial-gradient(ellipse 90% 60% at 50% 110%, rgba(8,8,12,.75) 0%, transparent 55%),
+                    radial-gradient(ellipse 80% 45% at 50% -10%, rgba(8,8,12,.7) 0%, transparent 55%);
+            }
+            body { font-size: 17.5px; }
+            .page-sub { font-size: 1.02rem; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -429,6 +481,13 @@
         </div>
 
         <div class="page-hint">Survolez pour agrandir · cliquez pour entrer</div>
+
+        <!-- Légende mobile du carrousel 3D -->
+        <div class="mob-caption" id="mob-caption" hidden>
+            <span class="mob-title" id="mob-title"></span>
+            <span class="mob-sub">Balayez pour tourner · touchez pour ouvrir</span>
+            <div class="mob-dots" id="mob-dots"></div>
+        </div>
     </main>
 
     <!-- ═══ VISIONNEUSE PLEIN ÉCRAN ═══ -->
@@ -771,6 +830,53 @@
             requestAnimationFrame(frame);
         }
 
+        // ── MOBILE : carrousel 3D — les écrans tournent autour d'un même axe ──
+        if (isMobile) {
+            const caption = document.getElementById('mob-caption');
+            const titleEl = document.getElementById('mob-title');
+            const dotsBox = document.getElementById('mob-dots');
+            if (caption) caption.hidden = false;
+            const N = cards.length;
+            let cur = 0;
+            const dots = cards.map((_, i) => {
+                const d = document.createElement('button');
+                d.className = 'mob-dot' + (i === 0 ? ' on' : '');
+                d.setAttribute('aria-label', 'Projet ' + (i + 1));
+                d.addEventListener('click', () => goTo(i));
+                dotsBox.appendChild(d);
+                return d;
+            });
+            function layout() {
+                cards.forEach((card, i) => {
+                    let d = ((i - cur) % N + N) % N;
+                    if (d > N / 2) d -= N;                 // -1 (gauche), 0 (devant), 1 (droite), 2 (derrière)
+                    let tf, op, z, bl;
+                    if (d === 0)       { tf = 'translate(-50%,-50%) translateZ(110px)'; op = 1; z = 40; bl = 0; }
+                    else if (d === 1)  { tf = 'translate(-50%,-50%) translateX(31vw) translateZ(-70px) rotateY(-26deg) scale(.72)'; op = .48; z = 20; bl = 1.2; }
+                    else if (d === -1) { tf = 'translate(-50%,-50%) translateX(-31vw) translateZ(-70px) rotateY(26deg) scale(.72)'; op = .48; z = 20; bl = 1.2; }
+                    else               { tf = 'translate(-50%,-50%) translateZ(-150px) scale(.55)'; op = .22; z = 10; bl = 2; }
+                    card.style.transform = tf;
+                    card.style.opacity = op;
+                    card.style.zIndex = z;
+                    card.style.filter = bl ? 'blur(' + bl + 'px)' : 'none';
+                    card.classList.toggle('is-front', d === 0);
+                });
+                const data = PROJECTS[cards[cur].dataset.project];
+                if (titleEl && data) titleEl.innerHTML = data.title + ' <span class="arrow">↗</span>';
+                dots.forEach((dd, i) => dd.classList.toggle('on', i === cur));
+            }
+            function goTo(i) { cur = ((i % N) + N) % N; layout(); }
+            window.__mobGo = goTo;
+            let swX = 0, swY = 0;
+            field.addEventListener('touchstart', e => { swX = e.touches[0].clientX; swY = e.touches[0].clientY; }, { passive: true });
+            field.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - swX;
+                const dy = e.changedTouches[0].clientY - swY;
+                if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy)) goTo(cur + (dx < 0 ? 1 : -1));
+            }, { passive: true });
+            layout();
+        }
+
         // ── Visionneuse plein écran ──
         const viewer = document.getElementById('viewer');
         const vTitle = document.getElementById('viewer-title');
@@ -811,8 +917,13 @@
             vBody.innerHTML = '';
             document.documentElement.style.overflow = '';
         }
-        cards.forEach(card => card.addEventListener('click', () => {
-            if (isMobile && card.dataset.embed !== '1') { window.open(card.dataset.url, '_blank'); return; }
+        cards.forEach((card, i) => card.addEventListener('click', () => {
+            if (isMobile) {
+                // écran de côté/arrière → on le fait tourner devant ; devant → on ouvre
+                if (window.__mobGo && !card.classList.contains('is-front')) { window.__mobGo(i); return; }
+                window.open(card.dataset.url, '_blank');
+                return;
+            }
             openViewer(card);
         }));
         document.getElementById('viewer-close').addEventListener('click', closeViewer);
