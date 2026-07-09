@@ -81,6 +81,9 @@
             --border:       rgba(255,255,255,0.07);
             --border-strong:rgba(255,255,255,0.14);
             --gradient:     linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #c084fc 100%);
+            /* Dégradé de marque FIXE : ne dérive jamais avec le scroll
+               (--gradient est décalé par applyColorShift au fil du défilement). */
+            --gradient-brand: linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #c084fc 100%);
 
             --font-title:   'Plus Jakarta Sans', system-ui, sans-serif;
             --font-modern:  'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -196,7 +199,11 @@
             padding: 1.7rem var(--pad-x);
             display: flex; justify-content: space-between; align-items: flex-start;
             transition: transform .6s var(--ease-out), opacity .9s var(--ease-out);
+            /* La barre pleine largeur ne doit PAS intercepter les clics sur le
+               contenu dessous : seuls ses enfants interactifs sont cliquables. */
+            pointer-events: none;
         }
+        .nav-links, .nav-brand.show { pointer-events: auto; }
         /* Header monopo : intégré au fond (transparent), se masque au scroll bas */
         .nav.hidden { transform: translateY(-115%); opacity: 0; pointer-events: none; }
         .nav.scrolled {
@@ -818,37 +825,6 @@
             background: rgba(255,255,255,0.09);
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 6px 20px -8px rgba(56,189,248,0.45);
         }
-        .svc-tab.is-active::after {
-            content: '';
-            position: absolute; left: 24%; right: 24%; bottom: 5px;
-            height: 2px; border-radius: 2px;
-            background: var(--gradient);
-            box-shadow: 0 0 10px rgba(56,189,248,.5);
-            transform-origin: 0 50%;
-            animation: tabUnderline .5s var(--ease-out);
-        }
-        @keyframes tabUnderline { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        /* Barre « chargement » sous les onglets : elle balaie à chaque
-           changement de catégorie → le carrousel prend vie. */
-        .svc-load {
-            position: absolute; left: 10%; right: 10%; bottom: -8px;
-            height: 2px; border-radius: 2px;
-            overflow: hidden; pointer-events: none;
-        }
-        .svc-load::before {
-            content: ''; display: block; height: 100%;
-            border-radius: inherit;
-            background: var(--gradient);
-            transform: scaleX(0);
-            transform-origin: 0 50%;
-            opacity: 0;
-        }
-        .svc-tabs.loading .svc-load::before { animation: svcLoad .6s var(--ease-out); }
-        @keyframes svcLoad {
-            0%   { transform: scaleX(0); opacity: 1; }
-            72%  { transform: scaleX(1); opacity: 1; }
-            100% { transform: scaleX(1); opacity: 0; }
-        }
 
         /* ── Panneaux : empilés dans la même cellule, fondu + glissé ── */
         .svc-viewport { display: grid; position: relative; z-index: 5; touch-action: pan-y; }
@@ -946,15 +922,20 @@
             font-size: 0.84rem; color: var(--fg-muted);
             text-shadow: var(--text-shadow);
         }
+        /* Badge promo minimaliste : texte en dégradé de marque FIXE, fond à peine
+           teinté (via box-shadow inset) + fine bordure — léger et toujours accordé. */
         .svc-badge {
             align-self: center;
-            font-size: 0.64rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.09em;
-            color: var(--bg); background: var(--gradient);
-            padding: 0.3rem 0.72rem; border-radius: 2rem;
-            /* peut passer sur 2 lignes : ne déborde JAMAIS de l'écran */
+            font-size: 0.62rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            padding: 0.3rem 0.75rem; border-radius: 2rem;
             white-space: normal; text-align: center;
             max-width: 100%; line-height: 1.35;
+            border: 1px solid rgba(129,140,248,0.28);
+            box-shadow: inset 0 0 0 100px rgba(255,255,255,0.04);
+            background: var(--gradient-brand);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: transparent;
         }
 
         /* CTA des panneaux — même langage « crystal » que le bouton du hero
@@ -1342,12 +1323,15 @@
                vague » (l'ancien cadre vitré était jugé peu élégant). */
         }
         /* ── Formulaire de contact — verre dépoli léger, sans grosse boîte ── */
-        /* ── DOUBLE CHOIX contact : switch carrousel minimaliste ── */
+        /* ── DOUBLE CHOIX contact : switch minimaliste, robuste et centré.
+           La surbrillance est portée DIRECTEMENT par le bouton actif (pas de
+           pastille séparée) → aucun décalage, aucun texte qui déborde. ── */
         .contact-switch {
-            position: relative;
             display: inline-flex;
+            max-width: 100%;
             margin: 0.4rem auto 0.2rem;
-            padding: 0.32rem;
+            padding: 0.3rem;
+            gap: 0.2rem;
             border-radius: 3rem;
             background: rgba(255,255,255,0.045);
             border: 1px solid var(--border-strong);
@@ -1355,48 +1339,42 @@
             backdrop-filter: blur(14px) saturate(140%);
         }
         .cs-tab {
-            position: relative; z-index: 2;
             border: none; cursor: pointer; background: transparent;
             font-family: var(--font-title); font-weight: 600;
-            font-size: 0.88rem; letter-spacing: 0.01em;
+            font-size: 0.9rem; letter-spacing: 0.01em;
             color: var(--fg-muted);
-            padding: 0.65rem 1.4rem; border-radius: 3rem;
-            transition: color .35s var(--ease);
+            padding: 0.72rem 1.5rem; border-radius: 3rem;
+            transition: color .35s var(--ease), background .35s var(--ease), box-shadow .35s var(--ease);
             white-space: nowrap;
         }
-        .cs-tab.is-active { color: var(--fg-strong); }
-        /* pastille glissante sous l'onglet actif */
-        .cs-thumb {
-            position: absolute; top: 0.32rem; bottom: 0.32rem; left: 0.32rem;
-            width: calc(50% - 0.32rem); z-index: 1;
-            border-radius: 3rem;
+        .cs-tab:hover { color: var(--fg-strong); }
+        .cs-tab.is-active {
+            color: var(--fg-strong);
             background: rgba(255,255,255,0.09);
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 6px 20px -8px rgba(56,189,248,0.5);
-            transition: transform .45s var(--ease-spring);
         }
-        .contact-switch.on-form .cs-thumb { transform: translateX(100%); }
         /* pile des panneaux : un seul visible, transition en glissé/fondu */
         .contact-stack {
             position: relative;
             width: 100%; max-width: 560px; margin: 0.6rem auto 0;
-            display: grid;
+            display: grid; justify-items: center;
         }
         .contact-panel {
             grid-area: 1 / 1;
+            width: 100%;
             opacity: 0; visibility: hidden;
             transform: translateX(24px);
             transition: opacity .45s var(--ease-out), transform .5s var(--ease-out), visibility 0s linear .5s;
             pointer-events: none;
         }
-        .contact-panel:not(.is-active) { position: relative; }
         .contact-panel.is-active {
             opacity: 1; visibility: visible; transform: none;
             transition: opacity .45s var(--ease-out) .08s, transform .5s var(--ease-out) .08s, visibility 0s;
             pointer-events: auto;
         }
         .contact-panel[data-panel="cal"] {
-            display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
-            padding: 1.4rem 0 0.4rem;
+            display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
+            padding: 1.8rem 0 0.6rem;
         }
         .contact-panel-lead {
             font-family: var(--font-body); font-size: 1rem; line-height: 1.6;
@@ -1404,6 +1382,12 @@
             text-shadow: var(--text-shadow);
         }
         .contact-cal { margin: 0; }
+        /* Mobile : le switch peut se mettre sur deux lignes, toujours centré. */
+        @media (max-width: 480px) {
+            .contact-inner { padding-left: 0; padding-right: 0; }
+            .contact-switch { flex-wrap: wrap; justify-content: center; width: fit-content; }
+            .cs-tab { padding: 0.68rem 1.2rem; font-size: 0.86rem; }
+        }
         .contact-form {
             width: 100%; max-width: 560px;
             margin: 0.4rem auto 0;
@@ -1424,11 +1408,13 @@
             font-family: var(--font-body);
             font-size: 1rem; line-height: 1.3;
             color: var(--fg-strong);
-            background-color: rgba(255,255,255,0.045);
+            /* Opacité un peu plus marquée → les champs ressortent mieux du fond. */
+            background-color: rgba(255,255,255,0.08);
             border: 1px solid var(--border-strong);
             border-radius: 14px;
             padding: 0.9rem 1.05rem;
             -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
             transition: border-color .3s var(--ease), box-shadow .3s var(--ease), background-color .3s var(--ease);
             appearance: none; -webkit-appearance: none;
         }
@@ -1436,7 +1422,7 @@
         .cf-input:focus, .cf-select:focus {
             outline: none;
             border-color: rgba(56,189,248,0.7);
-            background-color: rgba(255,255,255,0.075);
+            background-color: rgba(255,255,255,0.11);
             box-shadow: 0 0 0 3px rgba(56,189,248,0.14), 0 0 24px -6px rgba(56,189,248,0.55);
         }
         .cf-select {
@@ -1629,15 +1615,44 @@
             position: relative;
             overflow: hidden;
             display: flex; flex-direction: column; gap: 1.2rem;
-            transition: border-color .5s var(--ease), transform .5s var(--ease);
+            transition: border-color .5s var(--ease), transform .5s var(--ease), box-shadow .5s var(--ease);
         }
         .review::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: var(--gradient);
+            /* dégradé de marque FIXE (ne dérive pas au scroll) */
+            background: var(--gradient-brand);
             opacity: 0; transition: opacity .4s var(--ease);
         }
-        .review:hover { border-color: var(--border-strong); transform: translateY(-4px); }
+        .review:hover {
+            border-color: rgba(129,140,248,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 24px 60px -30px rgba(56,189,248,.35);
+        }
         .review:hover::before { opacity: 1; }
+        /* ── Apparition ÉCHELONNÉE & subtile des 3 avis : ils montent en douceur,
+           un léger flou se dissipe, l'un après l'autre (motion discret). ── */
+        .review.reveal {
+            opacity: 0; transform: translateY(30px) scale(0.985);
+            filter: blur(6px);
+            transition: opacity .9s var(--ease-out), transform 1s var(--ease-out), filter .9s var(--ease-out);
+        }
+        .review.reveal.in { opacity: 1; transform: none; filter: blur(0); }
+        .reviews-grid .review.reveal:nth-child(1) { transition-delay: .05s; }
+        .reviews-grid .review.reveal:nth-child(2) { transition-delay: .22s; }
+        .reviews-grid .review.reveal:nth-child(3) { transition-delay: .39s; }
+        /* Les étoiles scintillent une fois l'avis arrivé */
+        .review.reveal.in .review-stars { animation: starPop .7s var(--ease-spring) both; }
+        .reviews-grid .review.reveal:nth-child(2).in .review-stars { animation-delay: .3s; }
+        .reviews-grid .review.reveal:nth-child(3).in .review-stars { animation-delay: .47s; }
+        @keyframes starPop {
+            0% { opacity: 0; transform: translateY(6px) scale(0.9); }
+            60% { opacity: 1; }
+            100% { opacity: 1; transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .review.reveal { filter: none; transition-delay: 0s !important; }
+            .review.reveal.in .review-stars { animation: none; }
+        }
         .review-stars {
             color: #ffd479;
             font-size: 1rem; letter-spacing: 0.18em;
@@ -1658,7 +1673,7 @@
         .review-avatar {
             width: 42px; height: 42px; flex: 0 0 auto;
             border-radius: 50%;
-            background: var(--gradient);
+            background: var(--gradient-brand);
             display: grid; place-items: center;
             font-family: var(--font-title); font-weight: 800;
             font-size: 1.05rem; color: var(--bg);
@@ -2274,7 +2289,6 @@
                 <button class="svc-tab is-active" role="tab" aria-selected="true" data-idx="0">Audit</button>
                 <button class="svc-tab" role="tab" aria-selected="false" data-idx="1">Sites &amp; apps</button>
                 <button class="svc-tab" role="tab" aria-selected="false" data-idx="2">Automatisation</button>
-                <span class="svc-load" aria-hidden="true"></span>
             </div>
             <div class="svc-viewport" id="svc-viewport">
 
@@ -2707,25 +2721,16 @@
                 Dites-nous où vous en êtes — on vous répond honnêtement sur ce que l'IA peut faire pour vous.
             </p>
 
-            <!-- Double choix, carrousel minimaliste : réserver un échange (calendrier)
-                 OU nous écrire (formulaire). Un seul panneau visible à la fois. -->
+            <!-- Double choix : nous écrire (formulaire, par défaut) OU prendre
+                 rendez-vous (le calendrier s'ouvre par-dessus le site). -->
             <div class="contact-switch" role="tablist" aria-label="Comment nous contacter">
-                <span class="cs-thumb" aria-hidden="true"></span>
-                <button class="cs-tab is-active" role="tab" aria-selected="true" data-panel="cal">Réserver un échange</button>
-                <button class="cs-tab" role="tab" aria-selected="false" data-panel="form">Nous écrire</button>
+                <button class="cs-tab is-active" role="tab" aria-selected="true" data-panel="form">Nous écrire</button>
+                <button class="cs-tab" role="tab" aria-selected="false" data-panel="cal">Prendre rendez-vous</button>
             </div>
 
             <div class="contact-stack">
-                <!-- Panneau CALENDRIER -->
-                <div class="contact-panel is-active" data-panel="cal">
-                    <p class="contact-panel-lead">Choisissez un créneau — 30 minutes en visio avec un fondateur, gratuit et sans engagement.</p>
-                    <a class="btn btn-primary contact-cal" href="https://cal.com/alexis-ia-studio/30min" target="_blank" rel="noopener"
-                       data-cal-link="alexis-ia-studio/30min" data-cal-namespace="30min"
-                       data-cal-config='{"layout":"month_view","theme":"dark"}'>Ouvrir le calendrier <span class="btn-arrow">→</span></a>
-                </div>
-
-                <!-- Panneau FORMULAIRE -->
-                <div class="contact-panel" data-panel="form">
+                <!-- Panneau FORMULAIRE (par défaut) -->
+                <div class="contact-panel is-active" data-panel="form">
             <form class="contact-form" id="contact-form" novalidate>
                 <div class="cf-row">
                     <div class="cf-field">
@@ -2754,6 +2759,14 @@
                 <input type="text" name="website" id="cf-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
                 <button class="btn btn-primary" type="submit">Envoyer <span class="btn-arrow">→</span></button>
             </form>
+                </div>
+
+                <!-- Panneau RENDEZ-VOUS (le calendrier s'ouvre par-dessus le site) -->
+                <div class="contact-panel" data-panel="cal">
+                    <p class="contact-panel-lead">Choisissez un créneau — 30 minutes en visio avec un fondateur, gratuit et sans engagement.</p>
+                    <a class="btn btn-primary contact-cal" href="https://cal.com/alexis-ia-studio/30min" target="_blank" rel="noopener"
+                       data-cal-link="alexis-ia-studio/30min" data-cal-namespace="30min"
+                       data-cal-config='{"layout":"month_view","theme":"dark"}'>Ouvrir le calendrier <span class="btn-arrow">→</span></a>
                 </div>
             </div>
             <div class="contact-points">
@@ -3923,7 +3936,6 @@ setTimeout(updateScene, 100);
     if (!viewport) return;
     const panels = Array.from(viewport.querySelectorAll('.svc-panel'));
     const tabs = Array.from(document.querySelectorAll('.svc-tab'));
-    const tabsBox = document.querySelector('.svc-tabs');
     let cur = 0;
     function goTo(i) {
         const next = ((i % panels.length) + panels.length) % panels.length;
@@ -3934,12 +3946,6 @@ setTimeout(updateScene, 100);
             tb.classList.toggle('is-active', n === cur);
             tb.setAttribute('aria-selected', n === cur ? 'true' : 'false');
         });
-        // barre « chargement » sous les onglets : rejouée à chaque changement
-        if (tabsBox) {
-            tabsBox.classList.remove('loading');
-            void tabsBox.offsetWidth;   // force le redémarrage de l'animation
-            tabsBox.classList.add('loading');
-        }
     }
     tabs.forEach(tb => tb.addEventListener('click', () => goTo(+tb.dataset.idx)));
     let swX = 0;
