@@ -3,21 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nos réalisations — sites web, applications et automatisations conçus par ia studio, agence IA à Valence (Drôme) & Paris.">
-    <meta name="robots" content="index, follow">
-    <title>Nos réalisations — ia studio</title>
+    <title>Nos réalisations — Création de site web Drôme | ia studio</title>
+    <meta name="description" content="Nos réalisations : sites web, boutiques en ligne et applications conçus et développés par ia studio, agence web &amp; intelligence artificielle à Valence (Drôme) et Paris.">
+    <meta name="keywords" content="réalisations site web, portfolio agence web, création de site web Drôme, création site internet Valence, création d'application, agence web Rhône-Alpes, agence intelligence artificielle Drôme">
+    <meta name="author" content="ia studio">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#08080c">
+    <meta name="geo.region" content="FR-26">
+    <meta name="geo.placename" content="Valence, Drôme, Rhône-Alpes">
+    <meta name="geo.position" content="44.9333;4.8924">
+    <meta name="ICBM" content="44.9333, 4.8924">
     <link rel="canonical" href="https://ia-studio.fr/realisations.html">
-    <link rel="icon" href="favicon-ia.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:site_name" content="ia studio">
     <meta property="og:title" content="Nos réalisations — ia studio">
-    <meta property="og:description" content="Sites, applications et automatisations réalisés par ia studio (Valence & Paris).">
+    <meta property="og:description" content="Sites, boutiques en ligne et applications conçus par ia studio (Valence &amp; Paris).">
     <meta property="og:url" content="https://ia-studio.fr/realisations.html">
+    <meta property="og:image" content="https://ia-studio.fr/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nos réalisations — ia studio">
+    <meta name="twitter:description" content="Sites, boutiques en ligne et applications conçus par ia studio (Valence &amp; Paris).">
+    <meta name="twitter:image" content="https://ia-studio.fr/og-image.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://ia-studio.fr/" },
+        { "@type": "ListItem", "position": 2, "name": "Nos réalisations", "item": "https://ia-studio.fr/realisations.html" }
+      ]
+    }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet">
 
     <script type="importmap">
         { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
@@ -30,15 +58,15 @@
             --fg-strong:    #ffffff;
             --fg-muted:     #c0c0c8;
             --fg-dim:       #8a8a92;
-            --accent:       #38bdf8;
-            --accent-2:     #818cf8;
-            --accent-3:     #c084fc;
+            --accent:       #8be9ff;
+            --accent-2:     #5aa7ff;
+            --accent-3:     #aa91ff;
             --border:       rgba(255,255,255,0.07);
             --border-strong:rgba(255,255,255,0.14);
-            --gradient:     linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #c084fc 100%);
+            --gradient:     linear-gradient(120deg, #8be9ff 0%, #5aa7ff 48%, #aa91ff 100%);
             --font-title:   'Plus Jakarta Sans', system-ui, sans-serif;
-            --font-modern:  'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
-            --font-body:    'Manrope', system-ui, sans-serif;
+            --font-modern:  'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
             --ease:         cubic-bezier(0.22, 1, 0.36, 1);
             --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
             --pad-x:        clamp(1.25rem, 5vw, 5rem);
@@ -145,11 +173,11 @@
         .gradient {
             background: linear-gradient(
                 110deg,
-                #38bdf8 0%,
+                #8be9ff 0%,
                 #bfdbfe 30%,
-                #a78bfa 50%,
+                #8fffd1 50%,
                 #bfdbfe 70%,
-                #818cf8 100%
+                #5aa7ff 100%
             );
             background-size: 200% 100%;
             -webkit-background-clip: text; background-clip: text;
@@ -180,6 +208,12 @@
         .page-hint::before, .page-hint::after {
             content: ''; width: 26px; height: 1px; background: var(--border-strong);
         }
+        .legal-link {
+            position: absolute; right: 1.4rem; bottom: 1.2rem; z-index: 40;
+            font-size: 0.7rem; color: var(--fg-dim); text-decoration: none;
+            opacity: 0.75; transition: opacity .3s var(--ease);
+        }
+        .legal-link:hover { opacity: 1; color: var(--fg-muted); }
 
         /* ── CHAMP ORBITAL ── */
         .orbit-field { position: absolute; inset: 0; z-index: 10; }
@@ -199,10 +233,10 @@
         }
         .orbit-card:hover .card-inner {
             transform: scale(1.07) translateY(-4px);
-            border-color: rgba(56,189,248,.55);
+            border-color: rgba(139,233,255,.55);
             box-shadow: 0 30px 80px -20px rgba(0,0,0,.9),
-                        0 0 38px -4px rgba(56,189,248,.35),
-                        0 0 0 1px rgba(56,189,248,.25);
+                        0 0 38px -4px rgba(139,233,255,.35),
+                        0 0 0 1px rgba(139,233,255,.25);
         }
         /* étiquette au survol */
         .card-tag {
@@ -228,7 +262,7 @@
             letter-spacing: 0.12em; text-transform: uppercase;
             color: var(--accent);
             background: rgba(8,10,18,.85);
-            border: 1px solid rgba(56,189,248,.3);
+            border: 1px solid rgba(139,233,255,.3);
             padding: 0.18rem 0.5rem; border-radius: 1rem;
             pointer-events: none;
         }
@@ -266,8 +300,8 @@
         .orbit-card.zoomed .shot::after { opacity: 0; }
         .orbit-card.zoomed .card-inner {
             transform: none;
-            border-color: rgba(56,189,248,.5);
-            box-shadow: 0 40px 120px -30px rgba(0,0,0,.95), 0 0 60px -8px rgba(56,189,248,.3);
+            border-color: rgba(139,233,255,.5);
+            box-shadow: 0 40px 120px -30px rgba(0,0,0,.95), 0 0 60px -8px rgba(139,233,255,.3);
         }
         .orbit-card.zoomed .card-tag {
             opacity: 1; bottom: 1.2rem;
@@ -300,7 +334,7 @@
             font-family: var(--font-title); font-size: .62rem; font-weight: 700;
             letter-spacing: .1em; text-transform: uppercase;
             color: var(--accent);
-            border: 1px solid rgba(56,189,248,.35);
+            border: 1px solid rgba(139,233,255,.35);
             border-radius: 1.2rem; padding: .2rem .65rem;
         }
         .viewer-actions { margin-left: auto; display: flex; gap: .6rem; align-items: center; }
@@ -361,8 +395,8 @@
             .shot img.preview-img { animation: none; }
             .card-tag { display: none; }
             .orbit-card.is-front .card-inner {
-                border-color: rgba(56,189,248,.45);
-                box-shadow: 0 26px 70px -22px rgba(0,0,0,.9), 0 0 34px -6px rgba(56,189,248,.3);
+                border-color: rgba(139,233,255,.45);
+                box-shadow: 0 26px 70px -22px rgba(0,0,0,.9), 0 0 34px -6px rgba(139,233,255,.3);
             }
             /* légende + points sous le carrousel */
             .mob-caption {
@@ -383,7 +417,7 @@
                 background: rgba(255,255,255,0.16); cursor: pointer;
                 transition: background .4s var(--ease), box-shadow .4s var(--ease);
             }
-            .mob-dot.on { background: var(--gradient); box-shadow: 0 0 8px rgba(56,189,248,.4); }
+            .mob-dot.on { background: var(--gradient); box-shadow: 0 0 8px rgba(139,233,255,.4); }
         }
         @media (min-width: 901px) {
             .mob-caption { display: none !important; }
@@ -406,7 +440,8 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
         }
-    </style>
+    .eyebrow, .mini-label { display: none !important; } /* pastilles supprimées (demande Alexis) */
+</style>
 </head>
 <body>
 
@@ -428,59 +463,48 @@
             <span class="eyebrow reveal-up">Nos réalisations</span>
             <h1 class="page-title reveal-up" style="transition-delay:.08s">Des projets <span class="gradient">en orbite.</span></h1>
             <p class="page-sub reveal-up" style="transition-delay:.16s">
-                Sites, applications et interfaces conçus autour d'une même exigence : convertir.
-                Survolez un projet : il prend tout l'écran, en direct. Cliquez pour le parcourir.
+                Sites, boutiques en ligne et applications conçus et développés par Alexis et Simon.
+                Survolez un projet pour l'agrandir, cliquez pour visiter le site réel.
             </p>
         </header>
 
         <!-- ═══ PROJETS EN ORBITE ═══ -->
         <div class="orbit-field" id="orbit-field">
 
-            <div class="orbit-card" data-project="clay" data-ring="0" data-phase="0" data-url="https://clay.global/" data-embed="0">
+            <div class="orbit-card" data-project="sistaandco" data-ring="0" data-phase="0" data-url="https://sistaandco.fr" data-embed="0">
                 <div class="card-inner">
-                    <span class="card-type">Branding · UX</span>
+                    <span class="card-type">E-commerce · Ouverture sept. 2026</span>
                     <div class="shot">
-                        <img class="preview-img" src="realisations-assets/clay.jpg" alt="Clay · Branding & UX">
+                        <img class="preview-img" src="realisations-assets/sistaandco.jpg" alt="Sista & Co · Boutique en ligne">
                     </div>
                 </div>
-                <span class="card-tag">Clay · Branding & UX <span class="arrow">→</span></span>
+                <span class="card-tag">Sista &amp; Co · E-commerce <span class="arrow">→</span></span>
             </div>
 
-            <div class="orbit-card" data-project="metalab" data-ring="1" data-phase="1" data-url="https://www.metalab.com/" data-embed="1">
+            <div class="orbit-card" data-project="bandia" data-ring="1" data-phase="1" data-url="https://bandia.fr" data-embed="0">
                 <div class="card-inner">
-                    <span class="card-type">Produit · Interfaces</span>
+                    <span class="card-type">Studio web · Paris</span>
                     <div class="shot">
-                        <img class="preview-img" src="realisations-assets/metalab.jpg" alt="MetaLab · Interfaces">
-                        <iframe class="preview" data-src="https://www.metalab.com/" loading="lazy" tabindex="-1" sandbox="allow-scripts allow-same-origin"></iframe>
+                        <img class="preview-img" src="realisations-assets/bandia.jpg" alt="Bandia · Studio web sur mesure">
                     </div>
                 </div>
-                <span class="card-tag">MetaLab · Interfaces <span class="arrow">→</span></span>
+                <span class="card-tag">Bandia · Site vitrine <span class="arrow">→</span></span>
             </div>
 
-            <div class="orbit-card" data-project="rouje" data-ring="0" data-phase="2" data-url="https://www.rouje.com/" data-embed="0">
+            <div class="orbit-card" data-project="wildstock" data-ring="0" data-phase="2" data-url="https://bandia.fr/work/wild-stock" data-embed="0">
                 <div class="card-inner">
-                    <span class="card-type">E-commerce</span>
+                    <span class="card-type">Application SaaS · Temps réel</span>
                     <div class="shot">
-                        <img class="preview-img" src="realisations-assets/rouje.jpg" alt="Rouje · E-commerce">
+                        <img class="preview-img" src="realisations-assets/wildstock.jpg" alt="Wild-Stock · Application de gestion en temps réel">
                     </div>
                 </div>
-                <span class="card-tag">Rouje · E-commerce <span class="arrow">→</span></span>
-            </div>
-
-            <div class="orbit-card" data-project="fantasy" data-ring="1" data-phase="3" data-url="https://fantasy.co/" data-embed="1">
-                <div class="card-inner">
-                    <span class="card-type">Studio UX</span>
-                    <div class="shot">
-                        <img class="preview-img" src="realisations-assets/fantasy.jpg" alt="Fantasy · Studio UX">
-                        <iframe class="preview" data-src="https://fantasy.co/" loading="lazy" tabindex="-1" sandbox="allow-scripts allow-same-origin"></iframe>
-                    </div>
-                </div>
-                <span class="card-tag">Fantasy · Studio UX <span class="arrow">→</span></span>
+                <span class="card-tag">Wild-Stock · App sur mesure <span class="arrow">→</span></span>
             </div>
 
         </div>
 
         <div class="page-hint">Survolez pour agrandir · cliquez pour entrer</div>
+        <a class="legal-link" href="mentions-legales.html">Mentions légales</a>
 
         <!-- Légende mobile du carrousel 3D -->
         <div class="mob-caption" id="mob-caption" hidden>
@@ -506,18 +530,15 @@
     <!-- ═══ DONNÉES PROJETS ═══ -->
     <script>
     const PROJECTS = {
-        clay: { title: "Clay", url: "https://clay.global/",
-            chips: ["Branding", "UX design", "Site immersif"],
-            desc: "Agence de branding et d'UX (San Francisco). Une référence : typographie énorme, navigation limpide, chaque pixel au service du message." },
-        metalab: { title: "MetaLab", url: "https://www.metalab.com/",
-            chips: ["Produit", "Interfaces", "Motion design"],
-            desc: "Le studio derrière les interfaces de Slack ou Headspace. Matières 3D, motion subtil — la démonstration qu'un site sobre peut être spectaculaire." },
-        rouje: { title: "Rouje", url: "https://www.rouje.com/",
-            chips: ["E-commerce", "Mode", "Conversion"],
-            desc: "E-commerce mode parisien. Direction artistique forte, parcours d'achat sans friction : l'exemple d'un site qui vend par l'image." },
-        fantasy: { title: "Fantasy", url: "https://fantasy.co/",
-            chips: ["UX", "Apps", "Design system"],
-            desc: "Studio UX derrière des produits utilisés par des millions de personnes. Minimalisme radical, lumière et mouvement au service du contenu." }
+        sistaandco: { title: "Sista & Co", url: "https://sistaandco.fr",
+            chips: ["E-commerce", "Identité de marque", "Bientôt en ligne"],
+            desc: "Boutique en ligne mode & lifestyle, conçue avec sa fondatrice. Identité douce, page de teasing et liste privée — ouverture le 6 septembre 2026." },
+        bandia: { title: "Bandia", url: "https://bandia.fr",
+            chips: ["Site vitrine", "Direction artistique", "Paris"],
+            desc: "Le studio de développement web sur mesure de Simon, sur le secteur parisien. Typographie affirmée, ton direct : un site qui pose le niveau." },
+        wildstock: { title: "Wild-Stock", url: "https://bandia.fr/work/wild-stock",
+            chips: ["SaaS", "App web sur mesure", "Temps réel"],
+            desc: "Application de gestion d'événementiel : événements, stock et équipe dans un seul tableau de bord, à jour en temps réel — même hors ligne." }
     };
     </script>
 
@@ -580,8 +601,8 @@
     const colors  = new Float32Array(COUNT * 3);
     const sizes   = new Float32Array(COUNT);
     const randoms = new Float32Array(COUNT);
-    const c1 = new THREE.Color(0xbae6fd), c2 = new THREE.Color(0x38bdf8),
-          c3 = new THREE.Color(0x818cf8), c4 = new THREE.Color(0xc084fc);
+    const c1 = new THREE.Color(0xb7dfff), c2 = new THREE.Color(0x8be9ff),
+          c3 = new THREE.Color(0x5aa7ff), c4 = new THREE.Color(0xaa91ff);
     for (let i = 0; i < COUNT; i++) {
         const ratio = i / COUNT;
         let color;

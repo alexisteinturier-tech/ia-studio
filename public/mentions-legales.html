@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentions légales &amp; politique de confidentialité | ia studio</title>
+    <meta name="description" content="Mentions légales, données personnelles et politique de confidentialité du site ia-studio.fr — agence web &amp; intelligence artificielle à Valence (Drôme) et Paris.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#08080c">
+    <link rel="canonical" href="https://ia-studio.fr/mentions-legales.html">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #08080c;
+            --fg: #f5f5f7;
+            --fg-strong: #ffffff;
+            --fg-muted: #c0c0c8;
+            --fg-dim: #8a8a92;
+            --accent: #8be9ff;
+            --accent-2: #5aa7ff;
+            --accent-3: #aa91ff;
+            --border: rgba(255,255,255,0.07);
+            --border-strong: rgba(255,255,255,0.18);
+            --gradient: linear-gradient(120deg, #8be9ff 0%, #5aa7ff 48%, #aa91ff 100%);
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { background: var(--bg); color: var(--fg); -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif;
+            font-size: 16.5px; line-height: 1.65;
+            background:
+                radial-gradient(ellipse 80% 55% at 75% -10%, rgba(90,167,255,0.10), transparent 60%),
+                radial-gradient(ellipse 70% 50% at 15% 110%, rgba(139,233,255,0.07), transparent 60%),
+                radial-gradient(ellipse 50% 40% at 90% 80%, rgba(170,145,255,0.06), transparent 60%),
+                var(--bg);
+            min-height: 100vh;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+        .nav {
+            position: sticky; top: 0; z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.1rem clamp(1.25rem, 5vw, 5rem);
+            background: rgba(8,8,12,0.65);
+            backdrop-filter: blur(18px) saturate(140%);
+            -webkit-backdrop-filter: blur(18px) saturate(140%);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-brand { font-weight: 800; letter-spacing: -0.02em; color: var(--fg-strong); font-size: 1.05rem; }
+        .nav-brand span { font-weight: 400; color: var(--fg-muted); }
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-size: 0.85rem; font-weight: 600; color: var(--fg);
+            padding: 0.55rem 1.1rem; border-radius: 2rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border-strong);
+            transition: background .3s var(--ease), transform .3s var(--ease);
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); text-decoration: none; }
+
+        main { max-width: 860px; margin: 0 auto; padding: clamp(2.2rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 2rem) 4rem; }
+        h1 {
+            font-size: clamp(1.9rem, 4.5vw, 3rem);
+            font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+            margin-bottom: 0.6rem;
+        }
+        h1 .gradient {
+            background: var(--gradient);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: transparent;
+        }
+        .updated { color: var(--fg-dim); font-size: 0.86rem; margin-bottom: 2.4rem; }
+
+        section {
+            background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
+            border: 1px solid var(--border-strong);
+            border-radius: 26px;
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            padding: clamp(1.4rem, 3.5vw, 2.2rem);
+            margin-bottom: 1.4rem;
+        }
+        h2 {
+            font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+            font-weight: 700; letter-spacing: -0.025em;
+            margin-bottom: 0.9rem; color: var(--fg-strong);
+        }
+        p, li { color: var(--fg-muted); }
+        p + p, ul { margin-top: 0.75rem; }
+        ul { padding-left: 1.2rem; }
+        li + li { margin-top: 0.35rem; }
+        strong { color: var(--fg-strong); font-weight: 650; }
+
+        /* Champs à compléter avant mise en ligne : impossibles à rater */
+        .a-completer {
+            display: inline-block;
+            padding: 0.1rem 0.55rem; border-radius: 0.6rem;
+            background: rgba(255,196,120,0.14);
+            border: 1px dashed rgba(255,196,120,0.55);
+            color: #ffd479; font-weight: 600; font-size: 0.92em;
+        }
+        footer {
+            text-align: center; padding: 2rem 1rem 3rem;
+            color: var(--fg-dim); font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ⚠️ AVANT MISE EN LIGNE : compléter tous les champs surlignés [À COMPLÉTER]
+         (forme juridique, SIREN, adresse, hébergeur). Une mention légale incomplète
+         est une non-conformité (art. 6 LCEN). -->
+    <nav class="nav">
+        <a class="nav-brand" href="index.html">ia <span>studio</span></a>
+        <a class="btn-back" href="index.html">← Retour au site</a>
+    </nav>
+
+    <main>
+        <h1>Mentions légales <span class="gradient">&amp; confidentialité</span></h1>
+        <p class="updated">Dernière mise à jour : juillet 2026</p>
+
+        <section id="editeur">
+            <h2>1. Éditeur du site</h2>
+            <p>Le site <strong>ia-studio.fr</strong> est édité par <strong>ia studio</strong>,
+               <span class="a-completer">[À COMPLÉTER : forme juridique — ex. SAS, EURL, micro-entreprise de M. Alexis Teinturier]</span>,
+               immatriculée sous le numéro SIREN <span class="a-completer">[À COMPLÉTER : SIREN]</span>,
+               dont le siège est situé <span class="a-completer">[À COMPLÉTER : adresse complète]</span>.</p>
+            <ul>
+                <li>E-mail : <a href="mailto:bonjour@ia-studio.fr">bonjour@ia-studio.fr</a></li>
+                <li>Téléphone : <a href="tel:+33652324995">06 52 32 49 95</a></li>
+            </ul>
+        </section>
+
+        <section id="publication">
+            <h2>2. Directeur de la publication</h2>
+            <p><strong>Alexis Teinturier</strong>, cofondateur d'ia studio.</p>
+        </section>
+
+        <section id="hebergement">
+            <h2>3. Hébergement</h2>
+            <p>Le site est hébergé par <span class="a-completer">[À COMPLÉTER : nom de l'hébergeur]</span> —
+               <span class="a-completer">[À COMPLÉTER : adresse et téléphone de l'hébergeur]</span>.</p>
+        </section>
+
+        <section id="propriete">
+            <h2>4. Propriété intellectuelle</h2>
+            <p>L'ensemble des éléments du site (textes, visuels, logo, animations, code) est la propriété
+               exclusive d'ia studio, sauf mention contraire. Toute reproduction, représentation ou
+               adaptation, totale ou partielle, sans autorisation écrite préalable est interdite
+               (articles L.335-2 et suivants du Code de la propriété intellectuelle).</p>
+            <p>Les projets présentés sur la page « Réalisations » sont conçus et développés par
+               ia studio&nbsp;; les marques, contenus et données de chaque client demeurent la
+               propriété de leurs titulaires respectifs et sont présentés avec leur accord.</p>
+        </section>
+
+        <section id="donnees">
+            <h2>5. Données personnelles (RGPD)</h2>
+            <p><strong>Responsable de traitement :</strong> ia studio (coordonnées ci-dessus).</p>
+            <p><strong>Données collectées :</strong> lorsque vous utilisez le formulaire de contact ou de
+               rappel, nous collectons votre prénom, votre adresse e-mail, votre numéro de téléphone et
+               les informations que vous saisissez librement sur votre projet.</p>
+            <ul>
+                <li><strong>Finalité :</strong> répondre à votre demande et assurer le suivi commercial de votre projet. Aucune prospection non sollicitée, aucune revente de données.</li>
+                <li><strong>Base légale :</strong> mesures précontractuelles prises à votre demande (article 6.1.b du RGPD) et intérêt légitime (article 6.1.f).</li>
+                <li><strong>Destinataires :</strong> uniquement les deux fondateurs d'ia studio. Aucun transfert à des tiers à des fins commerciales.</li>
+                <li><strong>Durée de conservation :</strong> 3 ans après le dernier contact, puis suppression.</li>
+                <li><strong>Vos droits :</strong> accès, rectification, effacement, opposition, limitation et portabilité — sur simple e-mail à <a href="mailto:bonjour@ia-studio.fr">bonjour@ia-studio.fr</a>. Vous pouvez également saisir la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>).</li>
+            </ul>
+            <p>La prise de rendez-vous s'effectue via <strong>Cal.com</strong> : les données saisies lors
+               de la réservation (nom, e-mail, créneau) sont traitées par Cal.com, Inc. selon sa propre
+               <a href="https://cal.com/privacy" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
+        </section>
+
+        <section id="cookies">
+            <h2>6. Cookies et services tiers</h2>
+            <p>Ce site n'utilise <strong>aucun cookie publicitaire ni traceur de mesure d'audience</strong>.</p>
+            <p>Des ressources techniques sont chargées depuis des services tiers, susceptibles de recevoir
+               votre adresse IP à cette occasion&nbsp;:</p>
+            <ul>
+                <li><strong>Google Fonts</strong> (polices de caractères) — Google Ireland Ltd&nbsp;;</li>
+                <li><strong>jsDelivr</strong> (bibliothèque d'animation 3D)&nbsp;;</li>
+                <li><strong>Cal.com</strong> (module de prise de rendez-vous, chargé dans la section contact).</li>
+            </ul>
+            <p>Aucune de ces ressources n'est utilisée à des fins de suivi publicitaire par ia studio.</p>
+        </section>
+
+        <section id="credits">
+            <h2>7. Crédits</h2>
+            <p>Conception, design et développement : <strong>ia studio</strong> — Valence &amp; Paris.</p>
+        </section>
+    </main>
+
+    <footer>© 2026 ia studio · <a href="index.html">ia-studio.fr</a></footer>
+</body>
+</html>
