@@ -79,13 +79,24 @@
         .updated { color: var(--fg-dim); font-size: 0.86rem; margin-bottom: 2.4rem; }
 
         section {
-            background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
-            border: 1px solid var(--border-strong);
-            border-radius: 26px;
-            backdrop-filter: blur(16px) saturate(140%);
-            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.055));
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 28px;
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.26), 0 26px 60px -28px rgba(0,0,0,0.5);
             padding: clamp(1.4rem, 3.5vw, 2.2rem);
             margin-bottom: 1.4rem;
+        }
+        section::before {
+            content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.02) 50%, rgba(139,233,255,0.09) 65%, rgba(255,255,255,0.3) 100%);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
         }
         h2 {
             font-size: clamp(1.15rem, 2.2vw, 1.45rem);
@@ -113,9 +124,8 @@
     </style>
 </head>
 <body>
-    <!-- ⚠️ AVANT MISE EN LIGNE : compléter tous les champs surlignés [À COMPLÉTER]
-         (forme juridique, SIREN, adresse, hébergeur). Une mention légale incomplète
-         est une non-conformité (art. 6 LCEN). -->
+    <!-- ⚠️ À METTRE À JOUR dès que le statut juridique (forme, SIREN, adresse du
+         siège) sera finalisé — section "1. Éditeur du site" ci-dessous. -->
     <nav class="nav">
         <a class="nav-brand" href="index.html">ia <span>studio</span></a>
         <a class="btn-back" href="index.html">← Retour au site</a>
@@ -128,9 +138,9 @@
         <section id="editeur">
             <h2>1. Éditeur du site</h2>
             <p>Le site <strong>ia-studio.fr</strong> est édité par <strong>ia studio</strong>,
-               <span class="a-completer">[À COMPLÉTER : forme juridique — ex. SAS, EURL, micro-entreprise de M. Alexis Teinturier]</span>,
-               immatriculée sous le numéro SIREN <span class="a-completer">[À COMPLÉTER : SIREN]</span>,
-               dont le siège est situé <span class="a-completer">[À COMPLÉTER : adresse complète]</span>.</p>
+               porté par M. Alexis Teinturier — <em>statut juridique en cours de création</em>.
+               Les informations d'immatriculation (forme juridique, numéro SIREN, adresse du siège)
+               seront ajoutées à cette page dès finalisation des démarches.</p>
             <ul>
                 <li>E-mail : <a href="mailto:bonjour@ia-studio.fr">bonjour@ia-studio.fr</a></li>
                 <li>Téléphone : <a href="tel:+33652324995">06 52 32 49 95</a></li>
@@ -144,8 +154,10 @@
 
         <section id="hebergement">
             <h2>3. Hébergement</h2>
-            <p>Le site est hébergé par <span class="a-completer">[À COMPLÉTER : nom de l'hébergeur]</span> —
-               <span class="a-completer">[À COMPLÉTER : adresse et téléphone de l'hébergeur]</span>.</p>
+            <p>Le site est hébergé par <strong>Render Services, Inc.</strong> —
+               525 Brannan Street, Suite 300, San Francisco, CA 94107, États-Unis
+               (<a href="https://render.com" target="_blank" rel="noopener">render.com</a>).
+               Le nom de domaine est enregistré chez <strong>Hostinger</strong>.</p>
         </section>
 
         <section id="propriete">

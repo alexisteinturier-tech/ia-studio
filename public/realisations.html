@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nos réalisations — Création de site web Drôme | ia studio</title>
+    <title>Nos réalisations · Création de site web Drôme | ia studio</title>
     <meta name="description" content="Nos réalisations : sites web, boutiques en ligne et applications conçus et développés par ia studio, agence web &amp; intelligence artificielle à Valence (Drôme) et Paris.">
     <meta name="keywords" content="réalisations site web, portfolio agence web, création de site web Drôme, création site internet Valence, création d'application, agence web Rhône-Alpes, agence intelligence artificielle Drôme">
     <meta name="author" content="ia studio">
@@ -21,14 +21,14 @@
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:site_name" content="ia studio">
-    <meta property="og:title" content="Nos réalisations — ia studio">
+    <meta property="og:title" content="Nos réalisations | ia studio">
     <meta property="og:description" content="Sites, boutiques en ligne et applications conçus par ia studio (Valence &amp; Paris).">
     <meta property="og:url" content="https://ia-studio.fr/realisations.html">
     <meta property="og:image" content="https://ia-studio.fr/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Nos réalisations — ia studio">
+    <meta name="twitter:title" content="Nos réalisations | ia studio">
     <meta name="twitter:description" content="Sites, boutiques en ligne et applications conçus par ia studio (Valence &amp; Paris).">
     <meta name="twitter:image" content="https://ia-studio.fr/og-image.png">
 
@@ -282,6 +282,15 @@
             animation: imgDrift 22s ease-in-out infinite alternate;
         }
         @keyframes imgDrift { from { transform: translateY(0); } to { transform: translateY(calc(-100% + 156px)); } }
+        /* Session de navigation RÉELLE (enregistrement d'Alexis) : le site vit
+           dans la carte — scroll, clics, animations d'origine. */
+        .preview-img.is-live { height: 100%; object-fit: cover; object-position: top; animation: none; }
+        .shot video.preview-vid {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top;
+            background: #0d1020;
+        }
         /* Site réel, rendu à taille desktop puis réduit — animations vivantes. */
         .shot iframe.preview {
             position: absolute; top: 0; left: 0;
@@ -441,6 +450,26 @@
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
         }
     .eyebrow, .mini-label { display: none !important; } /* pastilles supprimées (demande Alexis) */
+
+/* ── LIQUID GLASS (à la Apple) : blur profond saturé + liseré de réfraction ── */
+.card-inner, .viewer-bar {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.055)) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.26), inset 0 -1px 1px rgba(255,255,255,0.06), 0 26px 60px -28px rgba(0,0,0,0.5);
+}
+.card-inner::before, .viewer-bar::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.09) 24%, rgba(255,255,255,0.02) 48%, rgba(139,233,255,0.09) 64%, rgba(255,255,255,0.05) 80%, rgba(255,255,255,0.3) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 </style>
 </head>
 <body>
@@ -453,7 +482,7 @@
 
     <!-- ═══ NAV : logo + retour au site ═══ -->
     <nav class="nav" id="nav">
-        <a class="nav-brand" href="index.html" aria-label="ia studio — retour à l'accueil"><svg viewBox="557 661 446 199" role="img" aria-label="ia studio"><use href="#logo-ia-studio" xlink:href="#logo-ia-studio"/></svg></a>
+        <a class="nav-brand" href="index.html" aria-label="ia studio, retour à l'accueil"><svg viewBox="557 661 446 199" role="img" aria-label="ia studio"><use href="#logo-ia-studio" xlink:href="#logo-ia-studio"/></svg></a>
         <a class="btn-back" href="index.html"><span class="arr">←</span> Retour au site</a>
     </nav>
 
@@ -461,7 +490,7 @@
     <main class="stage">
         <header class="page-head">
             <span class="eyebrow reveal-up">Nos réalisations</span>
-            <h1 class="page-title reveal-up" style="transition-delay:.08s">Des projets <span class="gradient">en orbite.</span></h1>
+            <h1 class="page-title reveal-up" style="transition-delay:.08s">Des projets <span class="gradient">en orbite</span></h1>
             <p class="page-sub reveal-up" style="transition-delay:.16s">
                 Sites, boutiques en ligne et applications conçus et développés par Alexis et Simon.
                 Survolez un projet pour l'agrandir, cliquez pour visiter le site réel.
@@ -485,7 +514,7 @@
                 <div class="card-inner">
                     <span class="card-type">Studio web · Paris</span>
                     <div class="shot">
-                        <img class="preview-img" src="realisations-assets/bandia.jpg" alt="Bandia · Studio web sur mesure">
+                        <video class="preview-vid" src="realisations-assets/bandia-nav.mp4" poster="realisations-assets/bandia.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Bandia · Studio web sur mesure, navigation réelle du site"></video>
                     </div>
                 </div>
                 <span class="card-tag">Bandia · Site vitrine <span class="arrow">→</span></span>
@@ -495,7 +524,7 @@
                 <div class="card-inner">
                     <span class="card-type">Application SaaS · Temps réel</span>
                     <div class="shot">
-                        <img class="preview-img" src="realisations-assets/wildstock.jpg" alt="Wild-Stock · Application de gestion en temps réel">
+                        <video class="preview-vid" src="realisations-assets/wildstock-nav.mp4" poster="realisations-assets/wildstock.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Wild-Stock · Application temps réel, navigation réelle dans l'application"></video>
                     </div>
                 </div>
                 <span class="card-tag">Wild-Stock · App sur mesure <span class="arrow">→</span></span>
@@ -532,13 +561,13 @@
     const PROJECTS = {
         sistaandco: { title: "Sista & Co", url: "https://sistaandco.fr",
             chips: ["E-commerce", "Identité de marque", "Bientôt en ligne"],
-            desc: "Boutique en ligne mode & lifestyle, conçue avec sa fondatrice. Identité douce, page de teasing et liste privée — ouverture le 6 septembre 2026." },
+            desc: "Boutique en ligne mode & lifestyle, conçue avec sa fondatrice. Identité douce, page de teasing et liste privée, ouverture le 6 septembre 2026." },
         bandia: { title: "Bandia", url: "https://bandia.fr",
             chips: ["Site vitrine", "Direction artistique", "Paris"],
             desc: "Le studio de développement web sur mesure de Simon, sur le secteur parisien. Typographie affirmée, ton direct : un site qui pose le niveau." },
         wildstock: { title: "Wild-Stock", url: "https://bandia.fr/work/wild-stock",
             chips: ["SaaS", "App web sur mesure", "Temps réel"],
-            desc: "Application de gestion d'événementiel : événements, stock et équipe dans un seul tableau de bord, à jour en temps réel — même hors ligne." }
+            desc: "Application de gestion d'événementiel : événements, stock et équipe dans un seul tableau de bord, à jour en temps réel, même hors ligne." }
     };
     </script>
 
@@ -927,7 +956,7 @@
                 vBody.appendChild(wrap);
                 const note = document.createElement('span');
                 note.className = 'viewer-note';
-                note.textContent = 'Ce site bloque l’aperçu intégré — capture défilante · ouvrez-le dans un onglet';
+                note.textContent = 'Ce site bloque l’aperçu intégré : capture défilante, à ouvrir dans un onglet';
                 vBody.appendChild(note);
             }
             viewer.classList.add('open');

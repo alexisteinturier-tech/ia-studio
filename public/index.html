@@ -29,7 +29,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Agence web &amp; IA dans la Drôme — ia studio">
+    <meta name="twitter:title" content="Agence web &amp; IA dans la Drôme | ia studio">
     <meta name="twitter:description" content="Création de site web, applications et agents IA. Valence (Drôme) &amp; Paris.">
     <meta name="twitter:image" content="https://ia-studio.fr/og-image.png">
     <!-- Données structurées : entreprise locale (Valence + Paris) -->
@@ -241,9 +241,8 @@
         .nav-brand {
             display: inline-flex; align-items: center;
             line-height: 0;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-6px);
+            opacity: 1;                 /* toujours visible (maquette : logo en haut à gauche) */
+            pointer-events: auto;
             transition: opacity .5s var(--ease), transform .5s var(--ease);
         }
         .nav-brand svg { height: 32px; width: auto; display: block; fill: var(--fg-strong); filter: drop-shadow(0 2px 8px rgba(8,8,12,0.5)); }
@@ -417,7 +416,8 @@
             background-size: 200% 100%;
             animation: gradShimmer 8s ease-in-out infinite;
         }
-        .typed-title .tt-caret {
+        .typed-title .tt-caret { display: none !important; }   /* curseur retiré (demande Alexis) */
+        .typed-title .tt-caret-off {
             display: inline-block; width: 2px; height: 0.92em;
             margin-left: 3px; transform: translateY(0.13em);
             background: var(--accent); border-radius: 1px;
@@ -499,25 +499,27 @@
             cursor: pointer;
             white-space: nowrap;
             border: 1px solid transparent;
-            transition: transform .3s var(--ease), background .3s var(--ease),
-                        color .3s var(--ease), border-color .3s var(--ease),
-                        box-shadow .4s var(--ease);
+            transition: transform .3s var(--ease), background-color .3s var(--ease),
+                        background-size .5s var(--ease), color .35s var(--ease),
+                        border-color .3s var(--ease), box-shadow .4s var(--ease);
             position: relative; overflow: hidden;
             will-change: transform;
         }
         .btn-primary {
             /* Léger fond vitré « crystal » IDENTIQUE aux boutons des 3 services
                (.holo-cta) → le CTA ressort en douceur, toujours cadré par l'aura. */
-            background: rgba(255,255,255,0.07);
+            background-color: rgba(255,255,255,0.07);
+            /* Vague blanche qui remplit le bouton de gauche à droite au survol */
+            background-image: linear-gradient(#fff, #fff);
+            background-repeat: no-repeat;
+            background-position: left center;
+            background-size: 0% 100%;
             color: var(--fg-strong);
             border: 1px solid rgba(255,255,255,0.14);
             -webkit-backdrop-filter: blur(10px) saturate(140%);
             backdrop-filter: blur(10px) saturate(140%);
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 6px 22px rgba(8,8,18,0.28);
             overflow: visible;             /* laisse respirer l'aura électrique + son glow */
-        }
-        .btn-primary:hover {
-            background: rgba(255,255,255,0.13);
         }
         /* CTA principal : aura « courant électrique » qui fait le tour du bouton */
         @property --curAngle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
@@ -545,25 +547,26 @@
             .btn-primary::after, .holo-cta::after, .btn-aura::after { animation: none; }
         }
         .btn-ghost {
-            background: rgba(255,255,255,0.04);
+            background-color: rgba(255,255,255,0.04);
+            /* Même vague blanche de remplissage gauche → droite que le CTA principal */
+            background-image: linear-gradient(#fff, #fff);
+            background-repeat: no-repeat;
+            background-position: left center;
+            background-size: 0% 100%;
             color: var(--fg);
             border: 1px solid var(--border-strong);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
-        .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); }
-        /* HOVER — voile blanc qui remplit le CTA, le texte devient « transparent »
-           (knockout par mix-blend-mode: lighten → les lettres révèlent la mer/les
-           particules au fond). Effet sur les deux CTA. */
+        /* HOVER — la vague blanche remplit le bouton de gauche à droite ; le texte
+           passe en foncé pour rester bien lisible sur le fond blanc. Les deux CTA. */
         .btn-primary:hover, .btn-ghost:hover {
-            background: #ffffff;
+            background-size: 100% 100%;
             color: #06060a;
-            mix-blend-mode: lighten;
             border-color: transparent;
             box-shadow: 0 8px 30px rgba(255,255,255,0.18);
-            -webkit-backdrop-filter: none; backdrop-filter: none;
         }
-        .btn-primary:hover .btn-arrow { color: #06060a; }
+        .btn-primary:hover .btn-arrow, .btn-ghost:hover .btn-arrow { color: #06060a; }
         .btn-primary:hover::after { opacity: 0; }   /* on coupe l'aura électrique sous le voile */
         .btn-arrow {
             display: inline-block;
@@ -576,6 +579,7 @@
            ════════════════════════════════════════════════════ */
         .hero {
             min-height: 100vh;
+            min-height: 100svh;
             display: grid;
             place-items: center;
             text-align: center;
@@ -588,7 +592,7 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%; left: 34%;
             transform: translate(-50%, -50%);
             width: 100%; max-width: 1100px;
             height: 75vh;
@@ -606,10 +610,10 @@
         .hero::after {
             content: '';
             position: absolute;
-            top: 62%; left: 50%;
+            top: 54%; left: 32%;
             transform: translate(-50%, -50%);
-            width: 700px; max-width: 90vw;
-            height: 220px;
+            width: 980px; max-width: 94vw;
+            height: 380px;
             background: radial-gradient(
                 ellipse 60% 55% at 50% 50%,
                 rgba(8,8,12,0.85) 0%,
@@ -659,6 +663,7 @@
             margin-bottom: -0.2rem;
         }
         .hero-slogan strong {
+            display: block;   /* le bloc dégradé démarre toujours à la ligne : frappe stable */
             font-weight: 700;
             /* Même dégradé que les autres mots (.gradient), AVEC le motion lent. */
             background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 48%, var(--accent-3) 100%);
@@ -704,13 +709,97 @@
         }
         .hero-title-wrap { position: relative; display: block; width: 100%; }
         .hero-actions {
-            display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center;
+            display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: flex-start;
             margin-top: 0.5rem;
         }
-        /* Apparition douce du contenu du hero au chargement */
+        /* Boutons façon maquette : rectangles arrondis en verre glacé, léger
+           dégradé — la lumière qui tourne (aura --curAngle) suit la forme */
+        .hero-actions .btn {
+            border-radius: 999px;               /* pilules (maquette) */
+            padding: 1.08rem 2.1rem;
+            font-size: 1rem;
+            font-weight: 680;
+        }
+        /* Couche 1 = vague blanche (0% au repos → 100% au survol), couches
+           suivantes = la teinte glacée d'origine. */
+        .hero-actions .btn-primary {
+            background-color: transparent;
+            background-image:
+                linear-gradient(#fff, #fff),
+                linear-gradient(180deg, rgba(139,233,255,0.13), rgba(90,167,255,0.05) 55%, rgba(170,145,255,0.08)),
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            background-repeat: no-repeat;
+            background-position: left center, center, center;
+            background-size: 0% 100%, auto, auto;
+            border: 1px solid rgba(139,233,255,0.25);
+            color: var(--fg-strong);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 14px 34px -16px rgba(90,167,255,0.45);
+        }
+        .hero-actions .btn-ghost {
+            background-color: transparent;
+            background-image:
+                linear-gradient(#fff, #fff),
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+            background-repeat: no-repeat;
+            background-position: left center, center;
+            background-size: 0% 100%, auto;
+            border: 1px solid rgba(255,255,255,0.13);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+        }
+        /* Survol dans le hero : la vague blanche remplit, texte foncé lisible */
+        .hero-actions .btn-primary:hover, .hero-actions .btn-ghost:hover {
+            background-size: 100% 100%, auto, auto;
+            color: #06060a;
+            border-color: transparent;
+            box-shadow: 0 10px 32px -8px rgba(255,255,255,0.28);
+        }
+        .hero-actions .btn:hover .btn-arrow { color: #06060a; }
+        @media (max-width: 860px) {
+            .hero--landed .hero-title-wrap, .hero--landed .hero-support { align-items: center; }
+            .hero--landed .hero-slogan, .hero--landed .hero-lede { text-align: center; }
+            .hero-actions { justify-content: center; }
+        }
+        /* ── CHORÉGRAPHIE D'INTRO ──
+           1. le logo motion s'assemble seul, grand, au centre ;
+           2. il s'envole et rétrécit vers le coin haut-gauche (place du nav-brand) ;
+           3. le titre, le sous-titre puis les CTA prennent la scène, bien espacés. */
         @keyframes heroIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        .hero-lede    { animation: heroIn .9s var(--ease-out) both .35s; }
-        .hero-actions { animation: heroIn .9s var(--ease-out) both .55s; }
+        .hero-support { opacity: 0; pointer-events: none; }
+        .hero-lede, .hero-actions { opacity: 0; }
+        .hero--landed .hero-support {
+            position: static; transform: none; margin-top: 0;
+            opacity: 1; pointer-events: auto;
+            align-items: flex-start; text-align: left;
+            gap: clamp(1.8rem, 3.4vh, 2.6rem);   /* respiration généreuse (maquette) */
+        }
+        .hero-logo { display: none; }   /* le logo vit dans la barre du haut (maquette) */
+        .hero--landed .hero-title-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+        /* Scène finale : centrage OPTIQUE (léger décalage haut, à la Apple) */
+        .hero--landed .hero-inner { transform: translateY(4vh); transition: transform .8s var(--ease); max-width: 1240px; }
+        /* Intro « écran nu » : pendant que le logo s'assemble, RIEN d'autre —
+           liens, burger et barre de progression n'arrivent qu'à l'atterrissage */
+        .logo-motion-wrap { pointer-events: none; }
+        /* La phrase, immense — voix éditoriale plein écran */
+        .hero--landed .hero-slogan {
+            font-size: clamp(2.4rem, 5.7vw, 5.3rem);
+            line-height: 1.08;
+            letter-spacing: -0.045em;
+            font-weight: 780;
+            max-width: 22ch;
+            text-align: left;
+        }
+        .hero--landed .hero-lede {
+            font-size: clamp(1.08rem, 1.4vw, 1.32rem);
+            max-width: 46ch;
+            text-align: left;
+        }
+        .hero--landed .hero-actions .btn { padding: 1rem 1.9rem; font-size: 0.98rem; }
+        @keyframes cuePulse {
+            0%, 100% { opacity: 0.35; transform: scaleY(0.65); transform-origin: top; }
+            50%      { opacity: 1; transform: scaleY(1); }
+        }
+        .hero--landed .hero-lede    { animation: heroIn .9s var(--ease-out) both .45s; }
+        .hero--landed .hero-actions { animation: heroIn .9s var(--ease-out) both .85s; }
 
         /* ════════════════════════════════════════════════════
            2. MANIFESTO
@@ -1009,22 +1098,7 @@
             position: relative;
             isolation: isolate;
         }
-        .stats::before {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 95%; max-width: 1200px;
-            height: 90%;
-            background: radial-gradient(
-                ellipse 70% 60% at 50% 50%,
-                rgba(8,8,12,0.7) 0%,
-                rgba(8,8,12,0.35) 50%,
-                transparent 80%
-            );
-            pointer-events: none;
-            z-index: 1;
-        }
+        .stats::before { display: none; }   /* chiffres bruts sur le fond animé */
         .stats .wrap { z-index: 5; }
         .stats-header {
             max-width: 760px;
@@ -1234,9 +1308,10 @@
         /* ── CARROUSEL FONDATEURS : photo, prénom, poste (vague), bio ── */
         .team-carousel {
             position: relative;
-            max-width: 660px; margin: 0 auto;
+            max-width: 470px; margin: 0 auto;
             display: flex; align-items: center;
-            gap: clamp(0.5rem, 2vw, 1.4rem);
+            gap: clamp(0.35rem, 1.4vw, 0.9rem);
+            padding-top: clamp(2.4rem, 4.5vw, 3.4rem);
             padding-bottom: 1.1rem;
         }
         .tc-viewport { flex: 1; display: grid; touch-action: pan-y; }
@@ -1427,7 +1502,7 @@
             font-family: var(--font-title);
             font-size: 0.7rem; font-weight: 600;
             letter-spacing: 0.12em; text-transform: uppercase;
-            color: var(--fg-dim);
+            color: var(--fg);
             text-shadow: var(--text-shadow);
         }
         .cf-input, .cf-select {
@@ -2071,18 +2146,190 @@
            reste visible entre les sections, mais le texte gagne un contraste
            net (cible : artisans & indépendants, peu à l'aise avec le digital).
            ════════════════════════════════════════════════════ */
+        /* ── LIQUID GLASS (à la Apple, iOS 26) : verre liquide très translucide,
+              blur profond ultra-saturé, RÉFRACTION lumineuse sur les bords
+              (liseré dégradé qui « attrape » la lumière) + reflet spéculaire
+              en haut, comme une lentille liquide posée sur le fond animé. ── */
         .glass {
             position: relative;
-            border-radius: 26px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
-            border: 1px solid rgba(255,255,255,0.18);
-            -webkit-backdrop-filter: blur(16px) saturate(140%);
-            backdrop-filter: blur(16px) saturate(140%);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.055));
+            border: 1px solid rgba(255,255,255,0.10);
+            -webkit-backdrop-filter: blur(26px) saturate(185%);
+            backdrop-filter: blur(26px) saturate(185%);
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.28),
+                inset 0 -1px 1px rgba(255,255,255,0.06),
+                0 30px 70px -30px rgba(0,0,0,0.55);
             padding: clamp(1.5rem, 3.4vw, 3rem);
         }
+        /* Liseré de réfraction : anneau dégradé qui capte la lumière (haut-gauche
+           brillant → fondu → rappel bas-droit), masqué pour ne garder que le bord */
+        .glass::before {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            padding: 1.5px;
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.55) 0%,
+                rgba(255,255,255,0.10) 22%,
+                rgba(255,255,255,0.02) 46%,
+                rgba(139,233,255,0.10) 62%,
+                rgba(255,255,255,0.06) 78%,
+                rgba(255,255,255,0.34) 100%);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        /* Lentille intérieure : lueur spéculaire en haut + remontée douce en bas */
+        .glass::after {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            background:
+                radial-gradient(130% 55% at 50% -12%, rgba(255,255,255,0.13), transparent 55%),
+                radial-gradient(110% 45% at 50% 115%, rgba(139,233,255,0.05), transparent 58%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* Avis masqués en attendant les vrais avis Google (DOM conservé) */
+        .reviews { display: none !important; }
+        /* Chiffres clés BRUTS sur le fond animé : apparition un par un */
+        .stat-item { opacity: 0; transform: translateY(20px);
+            transition: opacity .8s var(--ease-out), transform .8s var(--ease-out); }
+        .stats-in .stat-item:nth-child(1) { transition-delay: .1s; }
+        .stats-in .stat-item:nth-child(2) { transition-delay: .5s; }
+        .stats-in .stat-item:nth-child(3) { transition-delay: .9s; }
+        .stats-in .stat-item { opacity: 1; transform: none; }
+        .stats-source { opacity: 0; transition: opacity .8s var(--ease-out) 1.5s; }
+        .stats-in ~ .stats-source, .stats-in + .stats-source { opacity: 1; }
+        .stats.stats-live .stats-source { opacity: 1; }
+        /* Trait dégradé animé sous l'onglet actif du carrousel expertises */
+        .svc-tab { position: relative; }
+        .svc-tab::after {
+            content: ''; position: absolute; left: 1.15rem; right: 1.15rem; bottom: 0.3rem;
+            height: 2px; border-radius: 2px; background: var(--gradient);
+            transform: scaleX(0); transform-origin: left; opacity: 0;
+        }
+        .svc-tab.is-active::after { opacity: 1; animation: tabLine .55s var(--ease-out) forwards; }
+        @keyframes tabLine { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        /* Panneaux du carrousel : textes plus blancs et plus généreux */
+        .holo-list li { font-size: 0.95rem; color: #e9ecf5; font-weight: 600; }
+        .holo-body { font-size: clamp(0.98rem, 1.1vw, 1.12rem); color: #dcdfe9; }
+        /* Onglets contact (portés de la landing) */
+        .cta-switch { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem;
+            margin: 0 auto 1.5rem; padding: 0.32rem; border-radius: 3rem;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border-strong);
+            -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); }
+        .ctab { display: inline-flex; align-items: center; gap: 0.5rem; border: none; cursor: pointer;
+            background: transparent; font-weight: 650; font-size: 0.9rem; color: var(--fg-muted);
+            padding: 0.62rem 1.2rem; border-radius: 3rem;
+            transition: color .3s var(--ease), background .3s var(--ease); }
+        .ctab:hover { color: var(--fg-strong); }
+        .ctab.is-active { color: var(--fg-strong); background: rgba(255,255,255,0.10);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); }
+        .ctab svg { width: 15px; height: 15px; flex: 0 0 auto; stroke: currentColor; fill: none;
+            stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; opacity: .9; }
+        .cta-stack { position: relative; display: grid; justify-items: center; width: 100%; }
+        .cta-panel { grid-area: 1/1; width: 100%; opacity: 0; visibility: hidden; transform: translateY(14px);
+            transition: opacity .45s var(--ease-out), transform .5s var(--ease-out), visibility 0s linear .5s;
+            pointer-events: none; }
+        .cta-panel.is-active { opacity: 1; visibility: visible; transform: none;
+            transition: opacity .45s var(--ease-out) .08s, transform .5s var(--ease-out) .08s, visibility 0s;
+            pointer-events: auto; }
+        .cta-form { width: 100%; max-width: 560px; margin: 0 auto; display: flex !important;
+            flex-direction: column; gap: 0.95rem; text-align: left;
+            /* Panneau vitré sous les formulaires (Nous écrire / Être rappelé) :
+               les champs et libellés ressortent nettement du fond animé. */
+            background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.055));
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 24px;
+            padding: clamp(1.5rem, 3.2vw, 2.4rem);
+            -webkit-backdrop-filter: blur(26px) saturate(185%);
+            backdrop-filter: blur(26px) saturate(185%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.22), 0 30px 70px -34px rgba(0,0,0,0.55); }
+        .cf-status { margin-top: 0.5rem; font-size: 0.93rem; min-height: 1.3em; text-align: center; }
+        .cf-status.is-ok { color: #7ee3b0; } .cf-status.is-error { color: #ff9d9d; }
+        @media (max-width: 560px) { .cta-switch { width: 100%; } .ctab { flex: 1 1 auto; padding: .65rem .6rem; font-size: .8rem; justify-content: center; } }
         /* Pastilles de section supprimées (demande Alexis : « ça fait IA ») */
         .eyebrow { display: none !important; }
+        /* ── Hôte du calendrier : le visage d'Alexis, bien visible ── */
+        .cal-host {
+            display: flex; align-items: center; justify-content: center;
+            gap: 1.3rem; margin: 0 auto 1.4rem; max-width: 560px;
+            text-align: left;
+        }
+        .cal-host img {
+            width: clamp(128px, 15vw, 168px); height: clamp(128px, 15vw, 168px);
+            border-radius: 50%; object-fit: cover; object-position: 50% 18%;
+            border: 2px solid var(--border-strong);
+            box-shadow: 0 18px 50px -18px rgba(90,167,255,.45);
+            flex: 0 0 auto;
+        }
+        .cal-host-txt { display: grid; gap: 0.3rem; }
+        .cal-host-txt strong { font-size: 1.35rem; font-weight: 750; letter-spacing: -0.03em; color: var(--fg-strong); }
+        .cal-host-txt span { font-size: 0.95rem; color: var(--fg-muted); max-width: 30ch; line-height: 1.5; }
+        @media (max-width: 560px) { .cal-host { flex-direction: column; text-align: center; } }
+        /* ── Carrousel « Nos derniers projets » ── */
+        .projects { padding-top: var(--pad-y); padding-bottom: var(--pad-y); position: relative; isolation: isolate; }
+        .projects-header { max-width: 800px; margin: 0 auto clamp(1.8rem, 4vh, 2.6rem); text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 1.1rem; }
+        .pj-carousel { position: relative; max-width: 1100px; margin: 0 auto; }
+        .pj-viewport { display: grid; touch-action: pan-y; }
+        .pj-slide {
+            grid-area: 1 / 1;
+            display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,0.95fr);
+            gap: clamp(1.6rem, 4vw, 3rem); align-items: center;
+            opacity: 0; visibility: hidden; transform: translateY(14px);
+            transition: opacity .55s var(--ease) , transform .6s var(--ease), visibility 0s linear .6s;
+            pointer-events: none;
+        }
+        .pj-slide.is-active {
+            opacity: 1; visibility: visible; transform: none;
+            transition: opacity .55s var(--ease) .1s, transform .6s var(--ease) .1s, visibility 0s;
+            pointer-events: auto;
+        }
+        .pj-shot {
+            display: block; aspect-ratio: 16/10; border-radius: 18px; overflow: hidden;
+            border: 1px solid var(--border-strong); background: #0b0d16;
+            box-shadow: 0 24px 60px -30px rgba(0,0,0,.85);
+        }
+        .pj-shot img {
+            width: 100%; height: 100%; object-fit: cover; object-position: center 0%;
+            animation: workPanIdx 16s ease-in-out infinite alternate;
+        }
+        .pj-shot video { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+        @keyframes workPanIdx { from { object-position: center 0%; } to { object-position: center 100%; } }
+        .pj-info { display: grid; gap: 0.7rem; align-content: center; }
+        .pj-name { font-size: clamp(1.5rem, 2.6vw, 2.2rem); font-weight: 780; letter-spacing: -0.045em; color: var(--fg-strong); }
+        .pj-meta { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; color: var(--accent); }
+        .pj-desc { color: var(--fg-muted); font-size: 0.98rem; line-height: 1.65; max-width: 44ch; }
+        .pj-cta { display: inline-flex; align-items: center; gap: 0.5rem; width: fit-content;
+            margin-top: 0.4rem; padding: 0.75rem 1.4rem; border-radius: 3rem;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.16);
+            color: var(--fg-strong); font-weight: 650; font-size: 0.92rem;
+            transition: background .3s var(--ease), transform .3s var(--ease); }
+        .pj-slide:hover .pj-cta { background: rgba(255,255,255,0.14); transform: translateY(-2px); }
+        .pj-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+            width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,0.07); color: var(--fg-strong); font-size: 1.05rem; cursor: pointer;
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            transition: background .3s var(--ease); }
+        .pj-arrow:hover { background: rgba(255,255,255,0.16); }
+        #pj-prev { left: -12px; } #pj-next { right: -12px; }
+        .pj-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.4rem; }
+        .pj-dot { width: 8px; height: 8px; border-radius: 50%; border: none; cursor: pointer;
+            background: rgba(255,255,255,0.22); transition: background .3s var(--ease), transform .3s var(--ease); padding: 0; }
+        .pj-dot.is-active { background: var(--accent); transform: scale(1.25); }
+        @media (max-width: 860px) {
+            .pj-slide { grid-template-columns: 1fr; gap: 1.2rem; }
+            .pj-info { text-align: center; justify-items: center; }
+            #pj-prev { left: 4px; } #pj-next { right: 4px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .pj-shot img { animation: none; } }
         /* Sur un panneau vitré, les ombres portées du texte ne servent plus. */
         .glass p, .glass li, .glass .stat-label, .glass .step-desc, .glass .founder-bio { text-shadow: none; }
         /* Niveau h3 : graisses & serrage du clone CODEX SOL */
@@ -2212,17 +2459,20 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        {"@type":"Question","name":"Puis-je avoir mon site prêt et en ligne en une semaine ?","acceptedAnswer":{"@type":"Answer","text":"Oui — une semaine, c'est la promesse ia studio. On conçoit, on intègre vos contenus et on met en ligne un site rapide et bien référencé en quelques jours."}},
+        {"@type":"Question","name":"Puis-je avoir mon site prêt et en ligne en une semaine ?","acceptedAnswer":{"@type":"Answer","text":"Oui, une semaine : c'est la promesse ia studio. On conçoit, on intègre vos contenus et on met en ligne un site rapide et bien référencé en quelques jours."}},
         {"@type":"Question","name":"Un agent IA peut-il répondre à mes clients 24h/24 ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Nous mettons en place un agent qui répond aux questions, envoie des devis et prend des rendez-vous jour et nuit, connecté à vos outils et formé sur votre activité."}},
         {"@type":"Question","name":"Pouvez-vous automatiser mes tâches répétitives ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Relances, saisies, e-mails, suivis : on automatise ce qui fait perdre du temps, autour de vos outils actuels. En moyenne 12 h gagnées par semaine et par salarié."}},
         {"@type":"Question","name":"Pouvez-vous former mes équipes à l'IA ?","acceptedAnswer":{"@type":"Answer","text":"Oui, sur vos propres cas d'usage. Nous développons aussi des CRM et SaaS sur mesure quand aucun outil du marché ne suffit."}},
-        {"@type":"Question","name":"Est-ce accessible même sans compétence technique ?","acceptedAnswer":{"@type":"Answer","text":"Oui, c'est tout notre métier. On fait le pont entre la technologie et votre activité, sans jargon, avec un interlocuteur unique."}},
+        {"@type":"Question","name":"Suis-je obligé de prendre un abonnement, ou puis-je payer mon site en une fois ?","acceptedAnswer":{"@type":"Answer","text":"Les deux sont possibles. L'abonnement à 120 €/mois couvre tout (création, hébergement, maintenance, évolutions) sans investissement de départ ; le paiement en une fois existe aussi, dès 1 000 € selon le projet, et le site vous appartient."}},
         {"@type":"Question","name":"Mes données resteront-elles en sécurité ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Chaque solution est conçue dans le respect du RGPD, avec des outils et hébergements adaptés à la sensibilité de vos données."}}
       ]
     }
     </script>
     <style id="logo-motion-css">
-      .logo-motion-wrap{ position:relative; width:clamp(150px,26vw,250px); aspect-ratio:820/376; display:block; }
+      .logo-motion-wrap{ position:relative; width:clamp(150px,20vw,250px); aspect-ratio:820/376; display:block;
+        animation: logoDrift 7s ease-in-out infinite; }
+      @keyframes logoDrift{ 0%,100%{ transform: translateY(-7px) rotate(-0.4deg); } 50%{ transform: translateY(7px) rotate(0.4deg); } }
+      @media (prefers-reduced-motion: reduce){ .logo-motion-wrap{ animation: none; } }
       /* Logo « ia studio » : BLANC PUR, AUCUN glow ni dégradé (le dégradé est
          réservé au slogan). Ombre dark minime juste pour le détacher de la mer. */
       .logo-motion-wrap canvas{ width:100%; height:100%; display:block;
@@ -2248,7 +2498,7 @@
     <!-- Bouton menu (mobile) : ouvre le menu en plein écran -->
     <button class="nav-burger" id="nav-burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span></button>
     <nav class="nav" id="nav">
-        <a class="nav-brand" data-target="hero" aria-label="ia studio — retour à l'accueil"><svg viewBox="557 661 446 199" role="img" aria-label="ia studio"><use href="#logo-ia-studio" xlink:href="#logo-ia-studio"/></svg></a>
+        <a class="nav-brand" data-target="hero" aria-label="ia studio, retour à l'accueil"><svg viewBox="557 661 446 199" role="img" aria-label="ia studio"><use href="#logo-ia-studio" xlink:href="#logo-ia-studio"/></svg></a>
         <div class="nav-links">
             <a class="nav-link" data-target="services">Services</a>
             <a class="nav-link" href="realisations.html">Réalisations</a>
@@ -2274,17 +2524,18 @@
             <div class="hero-title-wrap">
                 <h1 class="hero-logo" id="hero-logo">
                     <span class="logo-motion-wrap"><canvas id="logo-motion" width="1640" height="752" aria-hidden="true"></canvas></span>
-                    <span class="sr-only">ia studio — création de sites web, intégration de l'intelligence artificielle et automatisation pour les TPE et PME, à Valence et à Paris</span>
+                    <span class="sr-only">ia studio : création de sites web, intégration de l'intelligence artificielle et automatisation pour les TPE et PME, à Valence et à Paris</span>
                 </h1>
                 <div class="hero-support">
-                    <p class="hero-slogan typed-title" data-type-now>Gagnez du temps, <strong>attirez plus de clients</strong> et simplifiez votre activité.</p>
+                    <p class="hero-slogan typed-title" data-type-now>Gagnez du temps, <strong>attirez plus de clients</strong></p>
                     <p class="hero-lede">
-                        Sites web, agents IA et applications pour les <strong>TPE et PME</strong>.
+                        Sites web, agents IA et applications pensés pour les <strong>TPE et PME</strong>
                     </p>
                     <div class="hero-actions">
                         <a class="btn btn-primary" href="#contact" data-target="contact">Réserver un échange</a>
                         <a class="btn btn-ghost" href="realisations.html">Nos réalisations</a>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -2294,22 +2545,6 @@
 
 
     <!-- ═══════════════ 2. MANIFESTO ═══════════════ -->
-    <section class="manifesto" id="manifesto">
-        <div class="manifesto-inner glass">
-            <span class="eyebrow">Notre conviction</span>
-            <h2 class="title-lg manifesto-quote typed-title">
-                Un beau site ne suffit pas. <span class="gradient">Il doit vous amener des clients.</span>
-            </h2>
-            <p class="body-text manifesto-sub">
-                Vous êtes artisan, indépendant ou commerçant. Vous n'avez ni le temps ni l'envie de gérer un site.
-                <strong>C'est notre métier.</strong> On s'occupe de tout : le design, les textes, Google. Vous, vous continuez votre travail.
-            </p>
-            <p class="body-text manifesto-sub" style="max-width: 56ch; opacity: 0.9;">
-                Et quand votre site tourne, l'intelligence artificielle peut prendre le relais sur ce qui vous fait perdre du temps —
-                <strong>répondre à vos clients, envoyer vos devis, relancer</strong>. Mais chaque chose en son temps.
-            </p>
-        </div>
-    </section>
 
     <!-- ═══════════════ CAS D'USAGE CONCRETS ═══════════════ -->
 
@@ -2318,7 +2553,7 @@
         <div class="wrap">
             <div class="services-header">
                 <span class="eyebrow">Nos expertises</span>
-                <h2 class="services-title typed-title">Trois façons de <span class="gradient">vous aider.</span></h2>
+                <h2 class="services-title typed-title">Trois façons de <span class="gradient">vous aider</span></h2>
             </div>
             <div class="svc-tabs" role="tablist" aria-label="Nos expertises">
                 <button class="svc-tab is-active" role="tab" aria-selected="true" data-idx="0">Site web</button>
@@ -2332,8 +2567,8 @@
                     <div class="svc-inner">
                         <div class="holo-text">
                             <h3 class="holo-name gradient">Site web</h3>
-                            <p class="holo-title">Un site ou une appli qui vous amène des clients.</p>
-                            <p class="holo-body">On crée des sites web et des applications rapides, beaux et faits pour vous. Pensés pour donner envie de vous contacter — jamais un modèle tout fait.</p>
+                            <p class="holo-title">Un site ou une appli qui vous amène des clients</p>
+                            <p class="holo-body">On crée des sites web et des applications rapides, beaux et faits pour vous. Pensés pour donner envie de vous contacter, jamais un modèle tout fait.</p>
                             <ul class="holo-list">
                                 <li>Un design unique, à votre image</li>
                                 <li>Rapide et bien placé sur Google</li>
@@ -2380,7 +2615,7 @@
                     <div class="svc-inner">
                         <div class="holo-text">
                             <h3 class="holo-name gradient">Audit</h3>
-                            <p class="holo-title">On regarde où l'IA peut vous aider.</p>
+                            <p class="holo-title">On regarde où l'IA peut vous aider</p>
                             <p class="holo-body">On examine votre activité, on repère ce qui vous fait perdre du temps, et on vous dit clairement par où commencer. Vous repartez avec un plan simple et concret.</p>
                             <ul class="holo-list">
                                 <li>On regarde votre façon de travailler</li>
@@ -2429,15 +2664,15 @@
                     <div class="svc-inner">
                         <div class="holo-text">
                             <h3 class="holo-name gradient">Automatisation</h3>
-                            <p class="holo-title">L'IA qui travaille à votre place.</p>
-                            <p class="holo-body">On met en place des assistants et des automatisations qui gèrent les tâches répétitives — réponses aux clients, relances, saisie — pendant que vous vous concentrez sur le reste.</p>
+                            <p class="holo-title">L'IA qui travaille à votre place</p>
+                            <p class="holo-body">On met en place des assistants et des automatisations qui gèrent les tâches répétitives : réponses aux clients, relances, saisie. Pendant ce temps, vous vous concentrez sur le reste.</p>
                             <ul class="holo-list">
                                 <li>Un chatbot qui répond jour et nuit</li>
                                 <li>Vos relances et votre suivi en automatique</li>
                                 <li>Connecté aux outils que vous utilisez déjà</li>
                                 <li>Adapté à votre façon de travailler</li>
                             </ul>
-                            <div class="svc-price"><span class="now">Sur devis uniquement</span><span class="note">chaque projet est unique — réponse chiffrée sous 48&nbsp;h</span></div>
+                            <div class="svc-price"><span class="now">Sur devis uniquement</span><span class="note">chaque projet est unique, réponse chiffrée sous 48&nbsp;h</span></div>
                             <a class="holo-cta" data-target="contact">Automatiser mon activité <span class="btn-arrow">→</span></a>
                         </div>
                         <div class="holo-art" aria-hidden="true">
@@ -2480,32 +2715,77 @@
         </div>
     </section>
 
+    <!-- ═══════════════ 3b. NOS DERNIERS PROJETS ═══════════════ -->
+    <section class="projects" id="projets">
+        <div class="wrap">
+            <div class="projects-header">
+                <span class="eyebrow">Nos réalisations</span>
+                <h2 class="title-lg">Nos derniers <span class="gradient">projets</span></h2>
+                <p class="body-text" style="text-align:center;">Conçus et développés par Alexis et Simon. Les aperçus défilent. Cliquez pour visiter le site réel.</p>
+            </div>
+            <div class="pj-carousel glass">
+                <button class="pj-arrow" id="pj-prev" type="button" aria-label="Projet précédent">←</button>
+                <div class="pj-viewport" id="pj-viewport">
+                    <a class="pj-slide is-active" href="https://bandia.fr/work/wild-stock" target="_blank" rel="noopener">
+                        <span class="pj-shot"><video src="realisations-assets/wildstock-nav.mp4" poster="realisations-assets/wildstock.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Wild-Stock, navigation réelle dans l'application"></video></span>
+                        <span class="pj-info">
+                            <span class="pj-name">Wild-Stock</span>
+                            <span class="pj-meta">APPLICATION SAAS · TEMPS RÉEL</span>
+                            <span class="pj-desc">Événements, stock et équipe dans un seul tableau de bord, à jour en temps réel, même hors ligne en plein service.</span>
+                            <span class="pj-cta">Voir le projet <span class="btn-arrow">↗</span></span>
+                        </span>
+                    </a>
+                    <a class="pj-slide" href="https://bandia.fr" target="_blank" rel="noopener">
+                        <span class="pj-shot"><video src="realisations-assets/bandia-nav.mp4" poster="realisations-assets/bandia.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Bandia, navigation réelle du site"></video></span>
+                        <span class="pj-info">
+                            <span class="pj-name">Bandia</span>
+                            <span class="pj-meta">STUDIO WEB SUR MESURE · PARIS</span>
+                            <span class="pj-desc">Le studio de Simon sur le secteur parisien. Typographie affirmée, ton direct : un site qui pose le niveau.</span>
+                            <span class="pj-cta">Visiter le site <span class="btn-arrow">↗</span></span>
+                        </span>
+                    </a>
+                    <a class="pj-slide" href="https://sistaandco.fr" target="_blank" rel="noopener">
+                        <span class="pj-shot"><img src="realisations-assets/sistaandco.jpg" alt="Sista & Co, boutique en ligne, ouverture septembre 2026" loading="lazy"></span>
+                        <span class="pj-info">
+                            <span class="pj-name">Sista &amp; Co</span>
+                            <span class="pj-meta">BOUTIQUE EN LIGNE · OUVERTURE SEPT. 2026</span>
+                            <span class="pj-desc">Boutique mode &amp; lifestyle conçue avec sa fondatrice : identité douce, page de teasing et liste privée avant l'ouverture.</span>
+                            <span class="pj-cta">Visiter le site <span class="btn-arrow">↗</span></span>
+                        </span>
+                    </a>
+                </div>
+                <button class="pj-arrow" id="pj-next" type="button" aria-label="Projet suivant">→</button>
+                <div class="pj-dots" id="pj-dots" aria-hidden="true"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- ═══════════════ 4. STATS ═══════════════ -->
     <section class="stats" id="stats">
         <div class="wrap">
             <div class="stats-header">
                 <span class="eyebrow">Ce que dit le terrain</span>
-                <h2 class="title-lg">L'IA transforme <span class="gradient">déjà les entreprises.</span></h2>
+                <h2 class="title-lg">L'IA transforme <span class="gradient">déjà les entreprises</span></h2>
                 <p class="body-text" style="text-align:center;">
-                    L'adoption s'accélère partout dans le monde. Voilà où en sont réellement les entreprises —
+                    L'adoption s'accélère partout dans le monde. Voilà où en sont réellement les entreprises,
                     et pourquoi c'est le bon moment pour prendre de l'avance.
                 </p>
             </div>
-            <div class="stats-flow glass">
+            <div class="stats-flow">
                 <div class="stat-item">
                     <span class="stat-num" data-value="78" data-suffix="%">78%</span>
                     <p class="stat-label">des entreprises dans le monde <strong>utilisent déjà l'IA</strong> dans au moins une fonction.</p>
                 </div>
                 <div class="stat-item">
                     <span class="stat-num" data-value="80" data-suffix="%">80%</span>
-                    <p class="stat-label">des entreprises auront adopté l'<strong>IA générative d'ici 2026</strong> — contre moins de 5% en 2023.</p>
+                    <p class="stat-label">des entreprises auront adopté l'<strong>IA générative d'ici 2027</strong>, contre moins de 5% en 2023.</p>
                 </div>
                 <div class="stat-item">
                     <span class="stat-num" data-value="31" data-suffix="%">31%</span>
                     <p class="stat-label">seulement des TPE-PME françaises l'utilisent&nbsp;: <strong>vos concurrents n'ont pas encore pris le train.</strong></p>
                 </div>
             </div>
-            <p class="stats-source">Sources&nbsp;: McKinsey — The State of AI (2025)&nbsp;· Gartner (2023)&nbsp;· Bpifrance Le Lab (2025).</p>
+            <p class="stats-source">Sources&nbsp;: McKinsey, The State of AI (2025)&nbsp;· Gartner (2023)&nbsp;· Bpifrance Le Lab (2025).</p>
         </div>
     </section>
 
@@ -2514,9 +2794,9 @@
         <div class="wrap">
             <div class="process-header">
                 <span class="eyebrow">Notre méthode</span>
-                <h2 class="title-lg">Trois étapes, <span class="gradient">et c'est parti.</span></h2>
+                <h2 class="title-lg">Trois étapes, <span class="gradient">et c'est parti</span></h2>
                 <p class="body-text" style="text-align:center;">
-                    Une méthode simple et transparente. Pas de cahier des charges, pas de jargon — on avance avec vous.
+                    Une méthode simple et transparente. Pas de cahier des charges, pas de jargon : on avance avec vous.
                 </p>
             </div>
             <div class="process-grid glass" id="process-grid">
@@ -2529,7 +2809,7 @@
                 <div class="process-step">
                     <span class="step-tag">02 · Analyse</span>
                     <h3 class="step-title">Ce que l'IA peut vous apporter</h3>
-                    <p class="step-desc">On identifie où l'IA crée vraiment de la valeur pour vous — chiffré et priorisé.</p>
+                    <p class="step-desc">On identifie où l'IA crée vraiment de la valeur pour vous, chiffré et priorisé.</p>
                 </div>
                 <div class="process-step">
                     <span class="step-tag">03 · Action</span>
@@ -2545,7 +2825,7 @@
         <div class="wrap">
             <div class="team-header">
                 <span class="eyebrow">Les fondateurs</span>
-                <h2 class="title-lg typed-title">Deux experts. <span class="gradient">Aucun intermédiaire.</span></h2>
+                <h2 class="title-lg typed-title">Deux experts. <span class="gradient">Aucun intermédiaire</span></h2>
                 <p class="body-text" style="text-align:center;">
                     Quand vous travaillez avec ia studio, vous travaillez <strong>directement avec Alexis et Simon</strong>. Toujours. Chaque projet est traité comme s'il était le seul.
                 </p>
@@ -2554,7 +2834,7 @@
                 <button class="tc-arrow" id="tc-prev" aria-label="Fondateur précédent">←</button>
                 <div class="tc-viewport" id="tc-viewport">
                     <div class="tc-slide is-active">
-                        <span class="founder-photo"><img src="team-alexis.jpg" alt="Alexis — cofondateur d'ia studio" width="400" height="400" loading="eager" decoding="async"></span>
+                        <span class="founder-photo"><img src="team-alexis.jpg" alt="Alexis, cofondateur d'ia studio" width="400" height="400" loading="eager" decoding="async"></span>
                     <h3 class="founder-name">Alexis</h3>
                         <p class="founder-role">Stratégie · Déploiement</p>
                         <p class="founder-bio">Votre interlocuteur direct, de la première discussion jusqu'à la livraison. <strong>Accès direct, écoute fine, 100% humain</strong> : il fait le pont entre la technologie et votre métier, pour que vous n'ayez jamais à le faire.</p>
@@ -2577,7 +2857,7 @@
         <div class="wrap">
             <div class="reviews-header">
                 <span class="eyebrow">Ils nous font confiance</span>
-                <h2 class="title-lg">Des résultats, <span class="gradient">et des clients ravis.</span></h2>
+                <h2 class="title-lg">Des résultats, <span class="gradient">et des clients ravis</span></h2>
                 <p class="body-text" style="text-align:center;">
                     Des dirigeants de PME de la Drôme et d'ailleurs, accompagnés concrètement sur l'IA.
                 </p>
@@ -2617,13 +2897,13 @@
         <div class="wrap presence-wrap">
             <div class="presence-text">
                 <span class="eyebrow">Notre ancrage</span>
-                <h2 class="title-lg">En Rhône-Alpes <span class="gradient">et à Paris.</span></h2>
+                <h2 class="title-lg">En Rhône-Alpes <span class="gradient">et à Paris</span></h2>
                 <p class="body-text">
-                    Basés à <strong>Valence, dans la Drôme</strong>, au cœur de la région Rhône-Alpes — et présents à <strong>Paris, proche de République</strong>. Assez proches pour vous rencontrer, partout pour vous accompagner.
+                    Basés à <strong>Valence, dans la Drôme</strong>, au cœur de la région Rhône-Alpes, et présents à <strong>Paris, proche de République</strong>. Assez proches pour vous rencontrer, partout pour vous accompagner.
                 </p>
                 <ul class="presence-list">
-                    <li><span class="presence-pin-dot"></span><strong>Valence (26)</strong> — Drôme · Rhône-Alpes</li>
-                    <li><span class="presence-pin-dot"></span><strong>Paris (75)</strong> — proche République</li>
+                    <li><span class="presence-pin-dot"></span><strong>Valence (26)</strong>, Drôme · Rhône-Alpes</li>
+                    <li><span class="presence-pin-dot"></span><strong>Paris (75)</strong>, proche République</li>
                 </ul>
             </div>
             <div class="presence-map" aria-hidden="true">
@@ -2660,16 +2940,16 @@
         <div class="wrap">
             <div class="faq-header">
                 <span class="eyebrow">Questions fréquentes</span>
-                <h2 class="title-lg">Les questions <span class="gradient">qu'on nous pose vraiment.</span></h2>
+                <h2 class="title-lg">Les questions <span class="gradient">qu'on nous pose vraiment</span></h2>
             </div>
             <div class="faq-list">
                 <details class="faq-item reveal">
                     <summary>Puis-je avoir mon site prêt et en ligne en une semaine&nbsp;?</summary>
-                    <div class="faq-a"><strong>Oui — une semaine, c'est la promesse ia studio.</strong> On conçoit, on intègre vos contenus et on met en ligne un site rapide et bien référencé en quelques jours. Vous voyez avancer votre projet dès le premier jour.</div>
+                    <div class="faq-a"><strong>Oui, une semaine : c'est la promesse ia studio.</strong> On conçoit, on intègre vos contenus et on met en ligne un site rapide et bien référencé en quelques jours. Vous voyez avancer votre projet dès le premier jour.</div>
                 </details>
                 <details class="faq-item reveal">
                     <summary>Un agent IA peut-il répondre à mes clients 24h/24&nbsp;?</summary>
-                    <div class="faq-a"><strong>Oui, c'est exactement ce qu'on met en place.</strong> Un agent qui répond aux questions, envoie des devis et prend des rendez-vous jour et nuit — connecté à vos outils, formé sur votre activité. Plus aucune demande sans réponse.</div>
+                    <div class="faq-a"><strong>Oui, c'est exactement ce qu'on met en place.</strong> Un agent qui répond aux questions, envoie des devis et prend des rendez-vous jour et nuit, connecté à vos outils et formé sur votre activité. Plus aucune demande sans réponse.</div>
                 </details>
                 <details class="faq-item reveal">
                     <summary>Pouvez-vous automatiser mes tâches répétitives&nbsp;?</summary>
@@ -2680,8 +2960,8 @@
                     <div class="faq-a"><strong>Oui, sur vos propres cas d'usage.</strong> Les bons réflexes, les bons outils, une vraie autonomie dès la fin de la formation. On développe aussi des <strong>CRM et SaaS sur mesure</strong> quand aucun outil du marché ne suffit.</div>
                 </details>
                 <details class="faq-item reveal">
-                    <summary>Est-ce accessible même si je n'y connais rien en technique&nbsp;?</summary>
-                    <div class="faq-a"><strong>Oui — c'est même tout notre métier.</strong> On fait le pont entre la technologie et le vôtre. Vous parlez de votre activité, on s'occupe de tout le reste. Sans jargon, avec un interlocuteur unique.</div>
+                    <summary>Suis-je obligé de prendre un abonnement, ou puis-je payer mon site en une fois&nbsp;?</summary>
+                    <div class="faq-a"><strong>Les deux sont possibles, c'est vous qui choisissez.</strong> L'abonnement à 120&nbsp;€/mois couvre tout, sans investissement de départ&nbsp;: création, hébergement, maintenance et évolutions. Vous préférez régler en une fois&nbsp;? C'est possible aussi, dès 1&nbsp;000&nbsp;€ selon le projet — le site vous appartient, et l'hébergement reste en option. On définit ensemble la formule qui respecte votre trésorerie.</div>
                 </details>
                 <details class="faq-item reveal">
                     <summary>Mes données resteront-elles en sécurité&nbsp;?</summary>
@@ -2697,53 +2977,77 @@
             <h2 class="title-lg contact-title gradient" id="contact-title" aria-label="Démarrons votre projet !">Démarrons votre projet !</h2>
             <p class="body-text" style="text-align:center; max-width: 54ch;">
                 Choisissez un créneau ci-dessous : <strong>30 minutes au téléphone, gratuites et sans engagement</strong>.
-                Vous parlez directement à Alexis ou Simon — jamais à un commercial.
+                Vous parlez directement à Alexis ou Simon, jamais à un commercial.
             </p>
 
             <!-- Le calendrier s'affiche directement : aucun bouton à cliquer. -->
-            <div class="contact-cal-panel">
+            <div class="cta-switch" role="tablist" aria-label="Comment nous contacter">
+                <button class="ctab is-active" role="tab" aria-selected="true" data-p="rdv"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg>Prendre RDV</button>
+                <button class="ctab" role="tab" aria-selected="false" data-p="email"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>Nous écrire</button>
+                <button class="ctab" role="tab" aria-selected="false" data-p="rappel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>Être rappelé</button>
+            </div>
+
+            <div class="cta-stack">
+                <div class="cta-panel is-active" data-p="rdv" role="tabpanel">
+                    <div class="contact-cal-panel">
+                <div class="cal-host">
+                    <img src="team-alexis.jpg" alt="Alexis, cofondateur, votre interlocuteur direct" width="400" height="400" loading="lazy" decoding="async">
+                    <div class="cal-host-txt"><strong>Alexis</strong><span>Cofondateur · votre interlocuteur direct, du premier appel à la livraison</span></div>
+                </div>
                 <div id="cal-inline"></div>
             </div>
+                </div>
 
-            <div class="fallback-sep">ou, si vous préférez</div>
-            <div class="fallback-row">
-                <a class="btn btn-ghost btn-aura" href="mailto:bonjour@ia-studio.fr">Nous écrire un email</a>
-                <button class="btn btn-ghost btn-aura" type="button" id="callback-toggle" aria-expanded="false" aria-controls="callback-form">Demander à être rappelé</button>
+                <div class="cta-panel" data-p="email" role="tabpanel">
+                    <form class="contact-form cta-form ia-form" novalidate aria-label="Nous écrire">
+                        <div class="cf-row">
+                            <div class="cf-field"><label for="em-prenom">Prénom</label><input class="cf-input" type="text" id="em-prenom" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required></div>
+                            <div class="cf-field"><label for="em-email">Email</label><input class="cf-input" type="email" id="em-email" name="email" placeholder="vous@exemple.fr" autocomplete="email" required></div>
+                        </div>
+                        <div class="cf-field">
+                            <label for="em-projet">Votre projet</label>
+                            <select class="cf-select" id="em-projet" name="projet" required>
+                                <option value="" disabled selected hidden>Choisissez un sujet…</option>
+                                <option value="Site vitrine">Un site vitrine</option>
+                                <option value="Site + application">Un site et une application</option>
+                                <option value="Audit IA">Un audit IA</option>
+                                <option value="Automatisation">De l'automatisation</option>
+                                <option value="Je ne sais pas encore">Je ne sais pas encore</option>
+                            </select>
+                        </div>
+                        <div class="cf-field">
+                            <label for="em-message">Votre message</label>
+                            <textarea class="cf-input cf-textarea" id="em-message" name="message" rows="4" placeholder="Dites-nous en quelques mots où vous en êtes…" required></textarea>
+                        </div>
+                        <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+                        <button class="btn btn-primary" type="submit" style="align-self:center">Envoyer <span class="btn-arrow">→</span></button>
+                        <p class="cf-status" role="status"></p>
+                    </form>
+                </div>
+
+                <div class="cta-panel" data-p="rappel" role="tabpanel">
+                    <form class="contact-form cta-form ia-form" novalidate aria-label="Demande de rappel">
+                        <div class="cf-row">
+                            <div class="cf-field"><label for="rp-prenom">Prénom</label><input class="cf-input" type="text" id="rp-prenom" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required></div>
+                            <div class="cf-field"><label for="rp-tel">Téléphone</label><input class="cf-input" type="tel" id="rp-tel" name="telephone" placeholder="06 12 34 56 78" autocomplete="tel" required></div>
+                        </div>
+                        <div class="cf-field">
+                            <label for="rp-horaire">Quand vous rappeler&nbsp;?</label>
+                            <select class="cf-select" id="rp-horaire" name="horaire" required>
+                                <option value="" disabled selected hidden>Choisissez un moment…</option>
+                                <option value="Matin (9h-12h)">Le matin (9h – 12h)</option>
+                                <option value="Midi (12h-14h)">Le midi (12h – 14h)</option>
+                                <option value="Après-midi (14h-18h)">L'après-midi (14h – 18h)</option>
+                                <option value="Fin de journée (18h-20h)">En fin de journée (18h – 20h)</option>
+                                <option value="Peu importe">Peu importe</option>
+                            </select>
+                        </div>
+                        <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+                        <button class="btn btn-primary" type="submit" style="align-self:center">Je souhaite être rappelé <span class="btn-arrow">→</span></button>
+                        <p class="cf-status" role="status"></p>
+                    </form>
+                </div>
             </div>
-
-            <form class="contact-form" id="callback-form" novalidate aria-label="Demande de rappel">
-                <div class="cf-row">
-                    <div class="cf-field">
-                        <label for="cf-prenom">Prénom</label>
-                        <input class="cf-input" type="text" id="cf-prenom" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>
-                    </div>
-                    <div class="cf-field">
-                        <label for="cf-tel">Téléphone</label>
-                        <input class="cf-input" type="tel" id="cf-tel" name="telephone" placeholder="06 12 34 56 78" autocomplete="tel" required>
-                    </div>
-                </div>
-                <div class="cf-field">
-                    <label for="cf-email">Email</label>
-                    <input class="cf-input" type="email" id="cf-email" name="email" placeholder="vous@exemple.fr" autocomplete="email" required>
-                </div>
-                <div class="cf-field">
-                    <label for="cf-projet">Votre projet</label>
-                    <select class="cf-select" id="cf-projet" name="projet" required>
-                        <option value="" disabled selected hidden>Choisissez un sujet…</option>
-                        <option value="Site vitrine">Un site vitrine</option>
-                        <option value="Site + application">Un site et une application</option>
-                        <option value="Audit IA">Un audit IA</option>
-                        <option value="Automatisation">De l'automatisation</option>
-                        <option value="Je ne sais pas encore">Je ne sais pas encore</option>
-                    </select>
-                </div>
-                <div class="cf-field">
-                    <label for="cf-message">Votre message <span style="text-transform:none;letter-spacing:0;color:var(--fg-dim)">(facultatif)</span></label>
-                    <textarea class="cf-input cf-textarea" id="cf-message" name="message" rows="3" placeholder="Dites-nous en quelques mots où vous en êtes…"></textarea>
-                </div>
-                <input type="text" name="website" id="cf-website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
-                <button class="btn btn-primary" type="submit">Je souhaite être rappelé <span class="btn-arrow">→</span></button>
-            </form>
 
             <div class="contact-points">
                 <div class="contact-point">
@@ -2751,7 +3055,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.3 8.9 8.9 0 0 1-3.8-.8L3 20l1.1-4.1a8.1 8.1 0 0 1-1.1-4.4A8.38 8.38 0 0 1 11.5 3.2 8.38 8.38 0 0 1 21 11.5z"/></svg>
                     </span>
                     <span class="contact-point-title">Échange direct</span>
-                    <span class="contact-point-desc">30 minutes avec un fondateur — jamais un commercial.</span>
+                    <span class="contact-point-desc">30 minutes avec un fondateur, jamais un commercial.</span>
                 </div>
                 <div class="contact-point">
                     <span class="contact-point-icon" aria-hidden="true">
@@ -2877,6 +3181,44 @@ function makeGalaxy(){
 /* ── NŒUD TORIQUE 2:3 (abstrait, remplace l'anneau) ── */
 /* ── HÉLICE DE DONNÉES : double brin + échelons (la tech, le futur) ── */
 /* ── DUNES : sol minéral plein écran, grandes ondulations calmes ── */
+function makeBall(){
+  /* RUBAN ABSTRAIT (haut → droite) épaissi, avec une courbe DÉDIÉE au mobile
+     (écran étroit : trajectoire plus verticale) — beau sur les deux mondes.
+     Sous-populations encodées dans z :
+       z < -4.4 → MÉTÉORES (chaînes tête+queue qui filent en diagonale)
+       z < -2.0 → poussière ambiante (dérive lente plein écran)
+       sinon    → ruban. */
+  const pos=new Float32Array(PARTICLE_COUNT*3);
+  const P = _isMobile
+    ? [[-2.0,2.6,0],[0.1,2.8,-0.25],[1.85,1.3,0.2],[1.4,-2.2,-0.15]]
+    : [[-3.6,2.2,0],[0.0,2.55,-0.3],[3.25,1.4,0.25],[2.55,-2.0,-0.2]];
+  const bez=t=>{const q=1-t;return [
+    q*q*q*P[0][0]+3*q*q*t*P[1][0]+3*q*t*t*P[2][0]+t*t*t*P[3][0],
+    q*q*q*P[0][1]+3*q*q*t*P[1][1]+3*q*t*t*P[2][1]+t*t*t*P[3][1],
+    q*q*q*P[0][2]+3*q*q*t*P[1][2]+3*q*t*t*P[2][2]+t*t*t*P[3][2]];};
+  const gauss=()=> (Math.random()+Math.random()+Math.random()-1.5)/1.5;
+  const METEOR_SHARE=0.016, DUST_SHARE=0.17;
+  for(let i=0;i<PARTICLE_COUNT;i++){
+    const u=i/PARTICLE_COUNT; let x,y,z;
+    if(u<METEOR_SHARE){          /* météores : ~14 chaînes de particules */
+      const chain=Math.floor(u/METEOR_SHARE*14);
+      const trail=Math.random();                    /* 0 = tête, 1 = bout de queue */
+      x=chain*1.17+Math.random()*0.4;               /* phase de départ (décalage temporel) */
+      y=-1.9+((chain*0.618)%1)*3.9;                 /* altitude propre à chaque météore */
+      z=-4.5-trail*0.5;
+    }else if(u<METEOR_SHARE+DUST_SHARE){            /* poussière ambiante, plan lointain */
+      x=Math.random()*10-6; y=(Math.random()*2-1)*2.2; z=-3.4+Math.random()*0.9;
+    }else{                                          /* ruban épaissi */
+      const t=Math.random();
+      const c=bez(t);
+      const wispy=Math.random()<0.30;
+      const spread=(wispy?0.55:0.175)*(0.6+0.8*Math.sin(t*Math.PI));
+      x=c[0]+gauss()*spread; y=c[1]+gauss()*spread; z=c[2]+gauss()*spread*0.7;
+    }
+    pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
+  }
+  return pos;
+}
 function makeVortex(){
   const pos=new Float32Array(PARTICLE_COUNT*3);
   const SX=3.6,SZ=3.2;
@@ -2912,19 +3254,20 @@ geometry.setAttribute('aRandom',new THREE.BufferAttribute(randoms,1));
 geometry.setAttribute('aOrb',new THREE.BufferAttribute(makeNeuralOrb(),3));
 geometry.setAttribute('aGal',new THREE.BufferAttribute(makeGalaxy(),3));
 geometry.setAttribute('aVor',new THREE.BufferAttribute(makeVortex(),3));
+geometry.setAttribute('aBall',new THREE.BufferAttribute(makeBall(),3));
 
 const material=new THREE.ShaderMaterial({
   uniforms:{
     uTime:{value:0}, uPixelRatio:{value:renderer.getPixelRatio()}, uFadeIn:{value:0},
     uMouse3D:{value:new THREE.Vector3(0,0,0)}, uMouseActive:{value:0},
     uColorShift:{value:0},
-    uShapeA:{value:2}, uShapeB:{value:2}, uMix:{value:0},
+    uShapeA:{value:4}, uShapeB:{value:4}, uMix:{value:0},
     uLava:{value:0}, uBigWave:{value:999.0},
     uPointScale:{value:_isMobile?0.85:1.0}
   },
   vertexShader:/* glsl */`
     attribute float aSize; attribute float aRandom;
-    attribute vec3 aOrb; attribute vec3 aGal; attribute vec3 aVor;
+    attribute vec3 aOrb; attribute vec3 aGal; attribute vec3 aVor; attribute vec3 aBall;
     varying vec3 vColor; varying float vAlpha; varying float vRnd;
     uniform float uTime,uPixelRatio,uFadeIn,uMouseActive,uColorShift,uShapeA,uShapeB,uMix,uPointScale,uLava,uBigWave;
     uniform vec3 uMouse3D;
@@ -2977,7 +3320,7 @@ const material=new THREE.ShaderMaterial({
         float w=smoothstep(0.40,1.0,uColorShift)*(0.10+0.14*(0.5+0.5*sin(uColorShift*9.42+aRandom*6.2831)));
         col=mix(shifted,vec3(1.0),w);
         col*=1.0+exp(-pow((position.x-uBigWave)*0.62,2.0))*0.9;
-      }else{ /* ── DUNES ── */
+      }else if(id<3.5){ /* ── DUNES ── */
         vec3 dn=aVor;
         dn.y+=sin(dn.x*0.5+uTime*0.10)*0.10+sin(dn.z*0.45-uTime*0.07)*0.08;
         p=dn;
@@ -2988,6 +3331,39 @@ const material=new THREE.ShaderMaterial({
         float crest=smoothstep(0.62,0.95,ht);
         col+=brandGrad(0.12)*crest*0.70;
         col*=0.92+0.25*sin(uTime*0.8+aRandom*25.0)*step(0.9,aRandom);
+      }else{ /* ── RUBAN ABSTRAIT (héros) + poussière + MÉTÉORES ── */
+        vec3 o=aBall;
+        if(o.z<-4.4){
+          /* MÉTÉORE : file en diagonale, tête brillante, queue qui s'estompe */
+          float trail=(-4.4-o.z)*2.0;
+          float speed=2.1+fract(o.y*7.31)*1.5;
+          float prog=mod(uTime*speed+o.x*1.35,16.0);
+          vec2 dir=normalize(vec2(1.0,-0.30));
+          vec2 pxy=vec2(-7.5,o.y)+dir*prog-dir*trail*0.68;
+          p=vec3(pxy,-2.5);
+          float head=pow(1.0-trail,1.6);
+          col=mix(brandGrad(0.12),vec3(1.05,1.1,1.2),0.45*head)*(0.25+1.1*head);
+        }else if(o.z<-2.0){
+          /* poussière ambiante DÉTAILLÉE : dérive, respiration, teintes variées */
+          o.x=mod(o.x+uTime*(0.08+0.18*aRandom)+6.0,10.0)-6.0;
+          o.y+=sin(uTime*0.45+aRandom*6.2831+o.x*0.6)*0.14;
+          o.z+=sin(uTime*0.3+aRandom*9.42)*0.18;
+          p=o;
+          col=brandGrad(fract(aRandom*7.77))*0.58;
+          col=hueShift(col,(aRandom-0.5)*0.3);
+          col*=0.45+0.55*sin(uTime*(0.8+aRandom)+aRandom*20.0);
+        }else{
+          /* coordonnée le long du ruban (haut-gauche → bas-droite) */
+          float u=(o.x-o.y)*0.42+0.5;
+          o.y+=sin(u*3.1+uTime*0.55)*0.11+sin(u*6.4-uTime*0.38)*0.05;
+          o.x+=sin(u*2.3-uTime*0.42)*0.065;
+          o.z+=sin(u*4.2+uTime*0.5)*0.055;
+          p=o;
+          col=brandGrad(clamp(0.10+0.8*fract(aRandom*5.0),0.0,1.0))*0.46;
+          float wave=exp(-pow(sin(u*2.6-uTime*1.15+aRandom*0.8)*1.7,2.0));
+          col+=brandGrad(clamp(u,0.0,1.0))*wave*0.5;
+          col*=0.9+0.35*sin(uTime*1.3+aRandom*30.0)*step(0.9,aRandom);
+        }
       }
     }
 
@@ -3100,13 +3476,14 @@ scene.add(particles);
 
 /* ── Séquence des formes au scroll : paliers courts + morphs LONGS (bien visibles) ── */
 /* fenêtres de morph allongées → transition posée, jamais pressée */
-const KF=[[0.00,2],[0.05,2],[0.22,0],[0.31,0],[0.47,3],[0.61,3],[0.75,2],[0.83,2],[1.00,2]];
+const KF=[[0.00,4],[0.07,4],[0.24,0],[0.33,0],[0.49,3],[0.63,3],[0.78,2],[0.86,2],[1.00,2]];
 /* cadrages caméra par forme : [z, y, lookY, fov, scale] */
 const CAMS=[
-  [_isMobile?4.2:3.1, 0.70, -0.05, 56, _isMobile?1.05:1.30],  /* magma (nappe immersive) */
-  [4.4, 1.75,  0.00, 50, 1.00],  /* galaxie (plongée) */
-  [_isMobile?4.0:2.8, 0.60, -0.05, 58, _isMobile?1.05:1.35], /* mer (immersive) */
-  [_isMobile?4.4:3.4, 0.95, -0.10, 55, _isMobile?1.02:1.25]   /* dunes (sol immersif) */
+  [_isMobile?4.2:3.1, 0.70, -0.05, 56, _isMobile?1.05:1.30, 0],  /* magma (nappe immersive) */
+  [4.4, 1.75,  0.00, 50, 1.00, 0],  /* galaxie (plongée) */
+  [_isMobile?4.0:2.8, 0.60, -0.05, 58, _isMobile?1.05:1.35, 0], /* mer (immersive) */
+  [_isMobile?4.4:3.4, 0.95, -0.10, 55, _isMobile?1.02:1.25, 0],  /* dunes (sol immersif) */
+  [_isMobile?4.9:4.3, 0.05, 0.10, 50, _isMobile?0.94:1.1, 0]  /* RUBAN héros (haut → droite), plein cadre */
 ];
 /* Plus AUCUNE dérive latérale : chaque forme prend tout l'écran, centrée.
    (L'ancien déplacement gauche/droite créait des saccades au scroll — retiré.) */
@@ -3119,10 +3496,10 @@ function computeShape(p){
   shapeState.a=s0; shapeState.b=s1;
   shapeState.m=(s0===s1)?0:smooth(0.02,0.98,(p-KF[i][0])/(KF[i+1][0]-KF[i][0]));
 }
-const target={z:CAMS[2][0],y:CAMS[2][1],look:CAMS[2][2],fov:CAMS[2][3],scale:CAMS[2][4],mix:0,a:2,b:2,colorShift:0};
-const cur={z:CAMS[2][0],y:CAMS[2][1],look:CAMS[2][2],fov:CAMS[2][3],scale:CAMS[2][4],mix:0,colorShift:0};
+const target={z:CAMS[4][0],y:CAMS[4][1],look:CAMS[4][2],fov:CAMS[4][3],scale:CAMS[4][4],x:CAMS[4][5],mix:0,a:4,b:4,colorShift:0};
+const cur={z:CAMS[4][0],y:CAMS[4][1],look:CAMS[4][2],fov:CAMS[4][3],scale:CAMS[4][4],x:CAMS[4][5],mix:0,colorShift:0};
 camera.position.set(0,cur.y,cur.z); camera.fov=cur.fov; camera.updateProjectionMatrix();
-shapeState.a=2; shapeState.b=2;
+shapeState.a=4; shapeState.b=4;
 /* ── Pipeline de progression LISSÉE ──
    Le scroll ne pilote plus directement les formes : il fixe une cible, et
    c'est la progression elle-même qui est lissée à chaque frame. Formes,
@@ -3138,6 +3515,7 @@ function applyProgress(c){
   target.look=A[2]+(B[2]-A[2])*m;
   target.fov=A[3]+(B[3]-A[3])*m;
   target.scale=(A[4]+(B[4]-A[4])*m)*(1+c*0.35);
+  target.x=(A[5]||0)+((B[5]||0)-(A[5]||0))*m;
   target.a=shapeState.a; target.b=shapeState.b; target.mix=m;
   target.colorShift=c;
 }
@@ -3226,6 +3604,7 @@ function frame(){
   cur.z+=(target.z-cur.z)*kc; cur.y+=(target.y-cur.y)*kc;
   cur.look+=(target.look-cur.look)*kc; cur.fov+=(target.fov-cur.fov)*kc;
   cur.scale+=(target.scale-cur.scale)*kc;
+  cur.x+=((target.x||0)-cur.x)*kc;
   cur.colorShift+=(target.colorShift-cur.colorShift)*_k(0.05);
   material.uniforms.uColorShift.value=cur.colorShift;
 
@@ -3241,6 +3620,7 @@ function frame(){
   CAM_LOOK.set(0,cur.look,0); camera.lookAt(CAM_LOOK);
   if(Math.abs(camera.fov-cur.fov)>0.01){camera.fov=cur.fov;camera.updateProjectionMatrix();}
 
+  particles.position.x=cur.x;
   particles.position.y=Math.sin(t*0.22)*0.05*_mo;
   particles.scale.setScalar(cur.scale);
   particles.rotation.z=Math.sin(t*0.05)*0.02*_mo;
@@ -3494,6 +3874,18 @@ function setupReveal(selector, stagger = 55, threshold = 0.25) {
 //  le titre monte en lignes masquées + voile de lumière, puis le reste suit.
 // ══════════════════════════════════════
 const PREFERS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ══════════════════════════════════════
+//  HERO SANS INTRO : le logo vit au-dessus du titre (sa boucle d'assemblage
+//  et son reflet continuent de jouer), tout est visible immédiatement.
+// ══════════════════════════════════════
+(function heroInstant() {
+    var hero = document.getElementById('hero');
+    if (!hero) return;
+    hero.classList.add('hero--landed');
+    document.documentElement.classList.add('intro-done');
+    document.dispatchEvent(new CustomEvent('hero:landed'));
+})();
 // ── LOGO VIDÉO : boucle douce — l'animation d'assemblage joue, tient un instant,
 //    se fond, puis recommence (la « petite boucle » du logo). ──
 (function setupLogoMotion(){
@@ -3515,6 +3907,29 @@ const PREFERS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').ma
   var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var lc=null,raf=null;
   function drawFull(a){cx.clearRect(0,0,W,H);cx.globalAlpha=a;cx.drawImage(lc,0,0);cx.globalAlpha=1;}
+  /* ── VERRE DE CRISTAL : après l'assemblage, un reflet spéculaire balaie le
+     logo (comme la lumière sur du verre), puis une étincelle 4 branches
+     éclate sur le point du « i » — le verre vient d'être astiqué. ── */
+  function drawGlass(t){
+    drawFull(1);
+    /* 1. reflet : bande de lumière inclinée qui traverse (500 → 1500 ms) */
+    var s=(t-150)/700;    /* reflet rapide et lissé, dès la fin de l'assemblage */
+    if(s>0&&s<1){
+      var ease=s<.5?2*s*s:1-Math.pow(-2*s+2,2)/2;
+      var x=(-0.3+1.6*ease)*W;
+      cx.save();cx.globalCompositeOperation='source-atop';
+      var g=cx.createLinearGradient(x-W*0.16,0,x+W*0.16,H*0.6);
+      g.addColorStop(0,'rgba(255,255,255,0)');
+      g.addColorStop(0.40,'rgba(139,233,255,0.14)');   /* frange cyan (réfraction) */
+      g.addColorStop(0.5,'rgba(255,255,255,0.9)');     /* cœur du reflet */
+      g.addColorStop(0.60,'rgba(170,145,255,0.14)');   /* frange violette */
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      cx.fillStyle=g;
+      cx.translate(x,H/2);cx.rotate(-0.38);
+      cx.fillRect(-W*0.18,-H*1.2,W*0.36,H*2.4);
+      cx.restore();
+    }
+  }
   function drawReveal(t){cx.clearRect(0,0,W,H);cx.save();cx.scale(scaleX,scaleY);
     for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){var colN=c/(COLS-1);var st=colN*SWEEP+jit(c);
       var p=clamp((t-st)/POP);var a=easeOut(p);var sc=0.5+0.5*back(p);if(a<=0.001)continue;
@@ -3538,9 +3953,10 @@ const PREFERS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').ma
   function start(){ if(reduced){drawFull(1);return;} var t0=performance.now();
     (function loop(now){
       if(!heroVis){ t0=now-_eHold; raf=requestAnimationFrame(loop); return; }
+      if(window.__logoFreeze){ drawFull(1); raf=null; return; }   /* posé dans le coin : logo plein, stable */
       var e=now-t0; _eHold=e;
       if(e<revealEnd){drawReveal(e);}
-      else if(e<revealEnd+HOLD){drawFull(1);}
+      else if(e<revealEnd+HOLD){drawGlass(e-revealEnd);}
       else if(e<revealEnd+HOLD+exitEnd){drawExit(e-revealEnd-HOLD);}
       else { cx.clearRect(0,0,W,H); raf=null; start(); return; }
       raf=requestAnimationFrame(loop);
@@ -3635,7 +4051,7 @@ setupReveal('.presence-text h2', 50, 0.4);
             const j = await r.json().catch(() => ({ ok: true }));
             if (j.ok === false) throw new Error(j.error || 'envoi');
             if (btn) btn.innerHTML = 'Message envoyé ✓';
-            status.textContent = 'Alexis et Simon ont bien reçu votre demande ✓' + (payload.prenom ? ' Merci ' + payload.prenom + ' —' : ' —') + ' réponse sous 24 h ouvrées.';
+            status.textContent = 'Alexis et Simon ont bien reçu votre demande ✓' + (payload.prenom ? ' Merci ' + payload.prenom + ' !' : '') + ' Réponse sous 24 h ouvrées.';
             status.classList.add('is-ok');
             form.querySelectorAll('input,select,textarea').forEach(el => el.disabled = true);
         } catch (err) {
@@ -3889,16 +4305,30 @@ setTimeout(updateScene, 100);
             el.appendChild(caret);
             el.classList.add('typing');
             let si = 0, ci = 0;
-            const stepMs = Math.max(24, Math.min(46, Math.round(1500 / total)));
+            /* Machine à écrire posée, en BLOCS saccadés : chaque segment
+               (« Gagnez du temps, » / « attirez plus de clients » / « et
+               simplifiez votre activité. ») se tape, puis respire avant le
+               suivant — le rythme voulu par Alexis. */
+            const stepMs = 58;
+            const SEG_PAUSE = 620;
             (function step() {
                 if (si >= segs.length) { setTimeout(() => el.classList.remove('typing'), 900); return; }
                 ci++;
                 spans[si].textContent = segs[si].text.slice(0, ci);
-                if (ci >= segs[si].text.length) { si++; ci = 0; }
-                setTimeout(step, stepMs);
+                let wait = stepMs;
+                if (ci >= segs[si].text.length) {
+                    si++; ci = 0;
+                    if (si < segs.length) wait = SEG_PAUSE;
+                }
+                setTimeout(step, wait);
             })();
         }
-        if (el.hasAttribute('data-type-now')) setTimeout(play, 450);
+        if (el.hasAttribute('data-type-now')) {
+            let started = false;
+            const go = () => { if (started) return; started = true; setTimeout(play, 180); };
+            if (document.querySelector('.hero--landed')) go();
+            else { document.addEventListener('hero:landed', go, { once: true }); setTimeout(go, 6400); }
+        }
         else {
             const io = new IntersectionObserver(es => {
                 es.forEach(en => { if (en.isIntersecting) { play(); io.disconnect(); } });
@@ -3963,6 +4393,53 @@ setTimeout(updateScene, 100);
     viewport.addEventListener('touchend', e => {
         const dx = e.changedTouches[0].clientX - swX;
         if (Math.abs(dx) > 45) goTo(cur + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+})();
+
+// ══════════════════════════════════════
+//  CARROUSEL PROJETS — flèches, points, swipe, rotation automatique
+// ══════════════════════════════════════
+(function initProjects() {
+    const viewport = document.getElementById('pj-viewport');
+    if (!viewport) return;
+    const slides = Array.from(viewport.querySelectorAll('.pj-slide'));
+    const dotsBox = document.getElementById('pj-dots');
+    let cur = 0, timer = null;
+    const dots = slides.map((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'pj-dot' + (i === 0 ? ' is-active' : '');
+        d.setAttribute('aria-label', 'Projet ' + (i + 1));
+        d.addEventListener('click', () => { stopAutoTimer(); goTo(i); });
+        dotsBox.appendChild(d);
+        return d;
+    });
+    function goTo(i) {
+        cur = ((i % slides.length) + slides.length) % slides.length;
+        slides.forEach((s, n) => s.classList.toggle('is-active', n === cur));
+        dots.forEach((d, n) => d.classList.toggle('is-active', n === cur));
+    }
+    /* Défilement auto volontairement SOBRE : un seul pas, lent —
+       Wild-Stock ouvre, puis Bandia arrive, et ça s'arrête là.
+       (Le visiteur explore la suite lui-même ; toute interaction coupe l'auto.) */
+    function stopAutoTimer() { if (timer) { clearTimeout(timer); timer = null; } }
+    /* l'auto-pas ne démarre que lorsque le visiteur ARRIVE sur la section */
+    let armed = false;
+    const io = new IntersectionObserver(es => {
+        es.forEach(en => {
+            if (en.isIntersecting && !armed) {
+                armed = true; io.disconnect();
+                timer = setTimeout(() => { if (!document.hidden) goTo(1); timer = null; }, 12000);
+            }
+        });
+    }, { threshold: 0.35 });
+    io.observe(viewport);
+    document.getElementById('pj-prev').addEventListener('click', e => { e.preventDefault(); stopAutoTimer(); goTo(cur - 1); });
+    document.getElementById('pj-next').addEventListener('click', e => { e.preventDefault(); stopAutoTimer(); goTo(cur + 1); });
+    let swX = 0;
+    viewport.addEventListener('touchstart', e => { swX = e.touches[0].clientX; }, { passive: true });
+    viewport.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - swX;
+        if (Math.abs(dx) > 45) { stopAutoTimer(); goTo(cur + (dx < 0 ? 1 : -1)); }
     }, { passive: true });
 })();
 
@@ -4041,12 +4518,65 @@ Cal.ns["30min"]("inline", {
     config: { layout: "month_view", theme: "dark" },
     calLink: "alexis-ia-studio/30min"
 });
-Cal.ns["30min"]("ui", { theme: "dark", cssVarsPerTheme: { dark: { "cal-brand": "#8be9ff" } }, hideEventTypeDetails: false, layout: "month_view" });
+Cal.ns["30min"]("ui", { theme: "dark", cssVarsPerTheme: { dark: { "cal-brand": "#8be9ff" } }, hideEventTypeDetails: true, layout: "month_view" });
 
 Cal.ns["30min"]("on", {
     action: "bookingSuccessful",
     callback: function () { if (window.dataLayer) window.dataLayer.push({ event: 'rdv_reserve' }); }
 });
+</script>
+<script>
+// Onglets contact : Prendre RDV / Nous écrire / Être rappelé (porté de la landing)
+(function () {
+    const tabs = Array.from(document.querySelectorAll('.ctab'));
+    const panels = Array.from(document.querySelectorAll('.cta-panel'));
+    if (!tabs.length) return;
+    tabs.forEach(t => t.addEventListener('click', () => {
+        tabs.forEach(x => { const on = x === t; x.classList.toggle('is-active', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
+        panels.forEach(pn => pn.classList.toggle('is-active', pn.dataset.p === t.dataset.p));
+    }));
+})();
+// Envoi des formulaires (écrire / rappel) vers le back-end du site
+Array.from(document.querySelectorAll('form.ia-form')).forEach(form => {
+    const btn = form.querySelector('button[type="submit"]');
+    const status = form.querySelector('.cf-status');
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        if (typeof form.reportValidity === 'function' && !form.reportValidity()) return;
+        const g = n => form[n] ? String(form[n].value || '').trim() : '';
+        const payload = {
+            prenom: g('prenom'), email: g('email'), telephone: g('telephone'),
+            projet: g('projet') || 'Accueil, prise de contact',
+            horaire: g('horaire'),
+            message: g('message') || (g('horaire') ? 'Demande de rappel, créneau souhaité : ' + g('horaire') : 'Demande depuis la page d\'accueil'),
+            website: g('website')
+        };
+        const prev = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Envoi en cours…';
+        status.textContent = ''; status.classList.remove('is-ok', 'is-error');
+        try {
+            const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const j = await r.json().catch(() => ({ ok: true }));
+            if (j.ok === false) throw new Error(j.error || 'envoi');
+            btn.innerHTML = 'Message envoyé ✓';
+            status.textContent = 'Merci' + (payload.prenom ? ' ' + payload.prenom : '') + ' ! Alexis et Simon vous répondent sous 24 h ouvrées.';
+            status.classList.add('is-ok');
+            form.querySelectorAll('input,select,textarea').forEach(el => el.disabled = true);
+        } catch (err) {
+            btn.disabled = false; btn.innerHTML = prev;
+            status.textContent = "L'envoi n'a pas abouti. Écrivez-nous à bonjour@ia-studio.fr";
+            status.classList.add('is-error');
+        }
+    });
+});
+// Chiffres clés : apparition un par un à l'arrivée sur la section
+(function () {
+    const s = document.querySelector('.stats');
+    if (!s) return;
+    new IntersectionObserver((es, io) => {
+        es.forEach(en => { if (en.isIntersecting) { s.classList.add('stats-in', 'stats-live'); io.disconnect(); } });
+    }, { threshold: 0.3 }).observe(s);
+})();
 </script>
 </body>
 </html>
