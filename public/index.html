@@ -972,13 +972,15 @@
             text-wrap: balance;
         }
         .holo-name.gradient { display: block; padding-bottom: 0.08em; }
+        /* Devient l'en-tête du panneau : le nom du service est déjà dans l'onglet
+           au-dessus, on ne le répète pas ici. */
         .holo-title {
             font-family: var(--font-title);
-            font-weight: 600;
-            font-size: clamp(1.02rem, 1.5vw, 1.3rem);
-            line-height: 1.25; letter-spacing: -0.015em;
+            font-weight: 700;
+            font-size: clamp(1.55rem, 2.7vw, 2.35rem);
+            line-height: 1.1; letter-spacing: -0.038em;
             color: var(--fg-strong);
-            text-wrap: balance; max-width: 30ch;
+            text-wrap: balance; max-width: 22ch;
         }
         .holo-body {
             color: var(--fg-muted);
@@ -1820,13 +1822,16 @@
         .presence-text { display: flex; flex-direction: column; gap: 1.3rem; }
         .presence-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.4rem; }
         .presence-list li {
-            display: flex; align-items: center; gap: 0.7rem;
+            /* Le texte est enveloppé dans un <span> : sans ça il devenait un item
+               flex à part et héritait du gap → gros trou avant la virgule. */
+            display: flex; align-items: flex-start; gap: 0.7rem;
             font-size: 0.98rem; color: var(--fg-muted);
             text-shadow: var(--text-shadow);
         }
         .presence-list strong { color: var(--fg-strong); font-weight: 600; }
         .presence-pin-dot {
             width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto;
+            margin-top: 0.42em;   /* aligné sur la 1re ligne, même si le texte passe à la ligne */
             background: var(--accent);
             box-shadow: 0 0 10px var(--accent);
         }
@@ -2219,13 +2224,17 @@
         .holo-list li { font-size: 0.95rem; color: #e9ecf5; font-weight: 600; }
         .holo-body { font-size: clamp(0.98rem, 1.1vw, 1.12rem); color: #dcdfe9; }
         /* Onglets contact (portés de la landing) */
-        .cta-switch { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem;
-            margin: 0 auto 1.5rem; padding: 0.32rem; border-radius: 3rem;
+        /* Rayons volontairement modestes : quand les 3 onglets passent sur deux
+           lignes, le conteneur devient un pavé haut et un grand rayon y creuse une
+           courbe dans laquelle la bulle de l'onglet collé au coin ne tient plus
+           (elle débordait de ~18 px avec 3rem). */
+        .cta-switch { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem; row-gap: 0.35rem;
+            margin: 0 auto 1.5rem; padding: 0.42rem; border-radius: 1.15rem;
             background: rgba(255,255,255,0.05); border: 1px solid var(--border-strong);
             -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); }
         .ctab { display: inline-flex; align-items: center; gap: 0.5rem; border: none; cursor: pointer;
             background: transparent; font-weight: 650; font-size: 0.9rem; color: var(--fg-muted);
-            padding: 0.62rem 1.2rem; border-radius: 3rem;
+            padding: 0.62rem 1.2rem; border-radius: 0.8rem;
             transition: color .3s var(--ease), background .3s var(--ease); }
         .ctab:hover { color: var(--fg-strong); }
         .ctab.is-active { color: var(--fg-strong); background: rgba(255,255,255,0.10);
@@ -2252,7 +2261,23 @@
             box-shadow: inset 0 1px 1px rgba(255,255,255,0.22), 0 30px 70px -34px rgba(0,0,0,0.55); }
         .cf-status { margin-top: 0.5rem; font-size: 0.93rem; min-height: 1.3em; text-align: center; }
         .cf-status.is-ok { color: #7ee3b0; } .cf-status.is-error { color: #ff9d9d; }
-        @media (max-width: 560px) { .cta-switch { width: 100%; } .ctab { flex: 1 1 auto; padding: .65rem .6rem; font-size: .8rem; justify-content: center; } }
+        @media (max-width: 560px) {
+            .cta-switch { width: 100%; }
+            .ctab { flex: 1 1 auto; padding: .65rem .6rem; font-size: .8rem; justify-content: center; }
+        }
+        /* Mobile : les libellés longs (« Je souhaite être rappelé ») frôlaient le
+           bord du panneau et débordaient sur les petits écrans (≤320 px). Le
+           bouton prend toute la largeur et peut passer à la ligne. */
+        @media (max-width: 560px) {
+            .cta-form { padding: clamp(1.15rem, 4.5vw, 2.4rem); }
+            .cta-form .btn, .contact-form .btn {
+                width: 100%; max-width: 100%;
+                white-space: normal;
+                justify-content: center; text-align: center;
+                padding-left: 1rem; padding-right: 1rem;
+                line-height: 1.25;
+            }
+        }
         /* Pastilles de section supprimées (demande Alexis : « ça fait IA ») */
         .eyebrow { display: none !important; }
         /* ── Hôte du calendrier : le visage d'Alexis, bien visible ── */
@@ -2327,7 +2352,16 @@
         @media (max-width: 860px) {
             .pj-slide { grid-template-columns: 1fr; gap: 1.2rem; }
             .pj-info { text-align: center; justify-items: center; }
-            #pj-prev { left: 4px; } #pj-next { right: 4px; }
+            #pj-prev { left: 0; } #pj-next { right: 0; }
+            /* Mobile : la pastille ronde des flèches passait par-dessus le texte.
+               On ne garde que le chevron, sans fond ni bordure. */
+            .pj-arrow {
+                background: none; border: none; box-shadow: none;
+                -webkit-backdrop-filter: none; backdrop-filter: none;
+                width: 34px; height: 34px; font-size: 1.35rem;
+                text-shadow: 0 1px 10px rgba(8,8,12,.9);
+            }
+            .pj-arrow:hover { background: none; }
         }
         @media (prefers-reduced-motion: reduce) { .pj-shot img { animation: none; } }
         /* Sur un panneau vitré, les ombres portées du texte ne servent plus. */
@@ -2502,7 +2536,6 @@
         <div class="nav-links">
             <a class="nav-link" data-target="services">Services</a>
             <a class="nav-link" href="realisations.html">Réalisations</a>
-            <a class="nav-link" data-target="stats">Résultats</a>
             <a class="nav-link" data-target="team">Équipe</a>
             <a class="nav-link nav-keep" data-target="contact">Nous contacter</a>
         </div>
@@ -2513,7 +2546,6 @@
         <div class="nav-ov-logo" aria-hidden="true"><svg viewBox="557 661 446 199" role="img" aria-label="ia studio"><use href="#logo-ia-studio" xlink:href="#logo-ia-studio"/></svg></div>
         <a class="nav-ov-link" data-target="services">Services</a>
         <a class="nav-ov-link" href="realisations.html">Réalisations</a>
-        <a class="nav-ov-link" data-target="stats">Résultats</a>
         <a class="nav-ov-link" data-target="team">Équipe</a>
         <a class="nav-ov-link" data-target="contact">Nous contacter</a>
     </div>
@@ -2566,8 +2598,7 @@
                 <article class="svc-panel is-active" data-idx="0" role="tabpanel">
                     <div class="svc-inner">
                         <div class="holo-text">
-                            <h3 class="holo-name gradient">Site web</h3>
-                            <p class="holo-title">Un site ou une appli qui vous amène des clients</p>
+                            <h3 class="holo-title">Un site ou une appli qui vous amène des clients</h3>
                             <p class="holo-body">On crée des sites web et des applications rapides, beaux et faits pour vous. Pensés pour donner envie de vous contacter, jamais un modèle tout fait.</p>
                             <ul class="holo-list">
                                 <li>Un design unique, à votre image</li>
@@ -2614,8 +2645,7 @@
                 <article class="svc-panel" data-idx="1" role="tabpanel">
                     <div class="svc-inner">
                         <div class="holo-text">
-                            <h3 class="holo-name gradient">Audit</h3>
-                            <p class="holo-title">On regarde où l'IA peut vous aider</p>
+                            <h3 class="holo-title">On regarde où l'IA peut vous aider</h3>
                             <p class="holo-body">On examine votre activité, on repère ce qui vous fait perdre du temps, et on vous dit clairement par où commencer. Vous repartez avec un plan simple et concret.</p>
                             <ul class="holo-list">
                                 <li>On regarde votre façon de travailler</li>
@@ -2663,12 +2693,14 @@
                 <article class="svc-panel" data-idx="2" role="tabpanel">
                     <div class="svc-inner">
                         <div class="holo-text">
-                            <h3 class="holo-name gradient">Automatisation</h3>
-                            <p class="holo-title">L'IA qui travaille à votre place</p>
+                            <h3 class="holo-title">L'IA qui travaille à votre place</h3>
                             <p class="holo-body">On met en place des assistants et des automatisations qui gèrent les tâches répétitives : réponses aux clients, relances, saisie. Pendant ce temps, vous vous concentrez sur le reste.</p>
+                            <p class="holo-body">On installe aussi votre <strong>CRM</strong>, l'outil qui garde vos clients, devis et relances au même endroit. On le développe sur mesure.</p>
                             <ul class="holo-list">
                                 <li>Un chatbot qui répond jour et nuit</li>
                                 <li>Vos relances et votre suivi en automatique</li>
+                                <li>Un CRM sur mesure ou clé en main</li>
+                                <li>Chaque client suivi, plus rien qui se perd</li>
                                 <li>Connecté aux outils que vous utilisez déjà</li>
                                 <li>Adapté à votre façon de travailler</li>
                             </ul>
@@ -2778,14 +2810,14 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-num" data-value="80" data-suffix="%">80%</span>
-                    <p class="stat-label">des entreprises auront adopté l'<strong>IA générative d'ici 2027</strong>, contre moins de 5% en 2023.</p>
+                    <p class="stat-label">des entreprises auront adopté l'<strong>IA générative d'ici 2027</strong>.</p>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-num" data-value="31" data-suffix="%">31%</span>
-                    <p class="stat-label">seulement des TPE-PME françaises l'utilisent&nbsp;: <strong>vos concurrents n'ont pas encore pris le train.</strong></p>
+                    <span class="stat-num" data-value="800" data-suffix="&nbsp;€">800&nbsp;€</span>
+                    <p class="stat-label">de valeur créée par mois, pour <strong>1 heure gagnée par salarié chaque jour</strong>.</p>
                 </div>
             </div>
-            <p class="stats-source">Sources&nbsp;: McKinsey, The State of AI (2025)&nbsp;· Gartner (2023)&nbsp;· Bpifrance Le Lab (2025).</p>
+            <p class="stats-source">Sources&nbsp;: McKinsey, The State of AI (2025)&nbsp;· Gartner (2023). Valeur estimée sur la base d'un coût employeur moyen de 30 à 40&nbsp;€/h, soit 630 à 840&nbsp;€ pour 21 jours ouvrés.</p>
         </div>
     </section>
 
@@ -2899,11 +2931,11 @@
                 <span class="eyebrow">Notre ancrage</span>
                 <h2 class="title-lg">En Rhône-Alpes <span class="gradient">et à Paris</span></h2>
                 <p class="body-text">
-                    Basés à <strong>Valence, dans la Drôme</strong>, au cœur de la région Rhône-Alpes, et présents à <strong>Paris, proche de République</strong>. Assez proches pour vous rencontrer, partout pour vous accompagner.
+                    Basés à <strong>Valence, dans la Drôme</strong>, au cœur de la région Rhône-Alpes, et présents à <strong>Paris</strong>. Assez proches pour vous rencontrer, partout pour vous accompagner.
                 </p>
                 <ul class="presence-list">
-                    <li><span class="presence-pin-dot"></span><strong>Valence (26)</strong>, Drôme · Rhône-Alpes</li>
-                    <li><span class="presence-pin-dot"></span><strong>Paris (75)</strong>, proche République</li>
+                    <li><span class="presence-pin-dot"></span><span><strong>Valence (26)</strong>, Drôme · Rhône-Alpes</span></li>
+                    <li><span class="presence-pin-dot"></span><span><strong>Paris (75)</strong></span></li>
                 </ul>
             </div>
             <div class="presence-map" aria-hidden="true">
@@ -3102,7 +3134,13 @@ let renderer;
 try{
   renderer=new THREE.WebGLRenderer({antialias:false,alpha:true,powerPreference:'high-performance'});
 }catch(e){ _staticFallback(); throw e; }
-const DPR_CAP=_isMobile?1.45:1.8;   /* plafond du clone : moins de pixels à remplir = plus fluide */    /* desktop : définition rétina pleine (le gouverneur protège) */
+/* Plafond de définition. Sur mobile il était à 1.45 alors que les téléphones
+   récents sont en devicePixelRatio 3 : le canvas était rendu à ~la moitié de la
+   résolution écran puis étiré → particules FLOUES. On monte à 2.0 : les grains
+   redeviennent nets et pixellisés comme sur desktop. La fluidité reste protégée
+   par le gouverneur plus bas (il redescend jusqu'à 0.60× si une frame dépasse
+   17,5 ms, donc un vieux téléphone retombe tout seul sur un rendu allégé). */
+const DPR_CAP=_isMobile?2.0:1.8;
 let _dprScale=1;
 function _applyPR(){
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,DPR_CAP)*_dprScale);
@@ -3197,11 +3235,16 @@ function makeBall(){
     q*q*q*P[0][1]+3*q*q*t*P[1][1]+3*q*t*t*P[2][1]+t*t*t*P[3][1],
     q*q*q*P[0][2]+3*q*q*t*P[1][2]+3*q*t*t*P[2][2]+t*t*t*P[3][2]];};
   const gauss=()=> (Math.random()+Math.random()+Math.random()-1.5)/1.5;
-  const METEOR_SHARE=0.016, DUST_SHARE=0.17;
+  /* Mobile : moins de particules au total (14k contre 36k), donc à part égale
+     chaque météore n'avait plus que ~16 grains contre ~41 sur desktop → traînées
+     trop maigres pour être vues. On augmente leur part et on réduit le nombre de
+     chaînes : moins de météores, mais aussi denses que sur desktop, donc VISIBLES. */
+  const METEOR_SHARE=_isMobile?0.030:0.016, DUST_SHARE=0.17;
+  const METEOR_CHAINS=_isMobile?10:14;
   for(let i=0;i<PARTICLE_COUNT;i++){
     const u=i/PARTICLE_COUNT; let x,y,z;
-    if(u<METEOR_SHARE){          /* météores : ~14 chaînes de particules */
-      const chain=Math.floor(u/METEOR_SHARE*14);
+    if(u<METEOR_SHARE){          /* météores : chaînes tête + queue */
+      const chain=Math.floor(u/METEOR_SHARE*METEOR_CHAINS);
       const trail=Math.random();                    /* 0 = tête, 1 = bout de queue */
       x=chain*1.17+Math.random()*0.4;               /* phase de départ (décalage temporel) */
       y=-1.9+((chain*0.618)%1)*3.9;                 /* altitude propre à chaque météore */
@@ -3263,7 +3306,7 @@ const material=new THREE.ShaderMaterial({
     uColorShift:{value:0},
     uShapeA:{value:4}, uShapeB:{value:4}, uMix:{value:0},
     uLava:{value:0}, uBigWave:{value:999.0},
-    uPointScale:{value:_isMobile?0.85:1.0}
+    uPointScale:{value:_isMobile?0.95:1.0}
   },
   vertexShader:/* glsl */`
     attribute float aSize; attribute float aRandom;
@@ -3532,6 +3575,11 @@ let mouseActive=0,mouseSmooth=0;
    sur tactile, iOS simule un mousemove au tap et mouseleave n'arrive jamais →
    une bulle de répulsion resterait collée en permanence (bande de particules déformées) */
 const _hasHover=matchMedia('(hover: hover) and (pointer: fine)').matches&&!_reduced;
+/* TACTILE : pas de curseur, donc la « mini-tornade » du survol n'existe pas et
+   la forme reste inerte sur téléphone. On pilote alors le tourbillon TOUT SEUL,
+   en boucle lente et non répétitive, pour que le visiteur mobile voie la même
+   matière vivante que sur desktop, sans avoir rien à toucher. */
+const _autoSwirl=!_hasHover&&!_reduced;
 if(_hasHover){
   addEventListener('mousemove',e=>{mouseNDC.x=(e.clientX/innerWidth)*2-1;mouseNDC.y=-(e.clientY/innerHeight)*2+1;mouseActive=1;});
   addEventListener('mouseleave',()=>{mouseNDC.set(9999,9999);mouseActive=0;});
@@ -3586,6 +3634,15 @@ function frame(){
   if(_flash>0.005){renderer.toneMappingExposure+=_flash*1.4;_flash*=0.90;}else _flash=0;
 
   /* souris */
+  /* Tourbillon autonome sur tactile : le « curseur » se promène le long d'une
+     courbe de Lissajous aux fréquences non multiples (donc jamais tout à fait la
+     même boucle), et sa force respire doucement. */
+  if(_autoSwirl){
+    const st=t*0.16;
+    mouseNDC.x=Math.sin(st)*0.62+Math.sin(st*0.47+1.3)*0.22;
+    mouseNDC.y=Math.cos(st*0.83)*0.42+Math.sin(st*1.31+0.6)*0.14;
+    mouseActive=0.72+0.28*Math.sin(st*0.9);
+  }
   mouseSmooth+=(mouseActive-mouseSmooth)*_k(0.08);
   material.uniforms.uMouseActive.value=mouseSmooth;
   if(mouseActive&&!_wasAct)mouseS.copy(mouseNDC);
@@ -4413,10 +4470,22 @@ setTimeout(updateScene, 100);
         dotsBox.appendChild(d);
         return d;
     });
+    /* Les slides inactives sont en visibility:hidden : sur mobile le navigateur
+       n'y démarre jamais la lecture. On relance donc explicitement la vidéo de la
+       slide affichée (et on met les autres en pause, ça économise la batterie). */
+    function syncVideos() {
+        slides.forEach((s, n) => {
+            const v = s.querySelector('video');
+            if (!v) return;
+            if (n === cur) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+            else if (!v.paused) v.pause();
+        });
+    }
     function goTo(i) {
         cur = ((i % slides.length) + slides.length) % slides.length;
         slides.forEach((s, n) => s.classList.toggle('is-active', n === cur));
         dots.forEach((d, n) => d.classList.toggle('is-active', n === cur));
+        syncVideos();
     }
     /* Défilement auto volontairement SOBRE : un seul pas, lent —
        Wild-Stock ouvre, puis Bandia arrive, et ça s'arrête là.
@@ -4424,6 +4493,9 @@ setTimeout(updateScene, 100);
     function stopAutoTimer() { if (timer) { clearTimeout(timer); timer = null; } }
     /* l'auto-pas ne démarre que lorsque le visiteur ARRIVE sur la section */
     let armed = false;
+    /* Seuil sans ratio : sur mobile les slides s'empilent et le carrousel peut
+       devenir plus haut que l'écran, auquel cas un seuil en ratio (0.35) devient
+       impossible à atteindre. La bande centrale marche quelle que soit sa hauteur. */
     const io = new IntersectionObserver(es => {
         es.forEach(en => {
             if (en.isIntersecting && !armed) {
@@ -4431,8 +4503,28 @@ setTimeout(updateScene, 100);
                 timer = setTimeout(() => { if (!document.hidden) goTo(1); timer = null; }, 12000);
             }
         });
-    }, { threshold: 0.35 });
+    }, { rootMargin: '-20% 0px -20% 0px', threshold: 0 });
     io.observe(viewport);
+
+    /* ── Lecture des aperçus ──
+       L'attribut `autoplay` ne suffit pas : dès que l'onglet passe en arrière-plan
+       (ou sur mobile, où la politique d'autoplay est stricte et où les slides
+       inactives sont en visibility:hidden), les vidéos restent EN PAUSE et les
+       aperçus paraissent figés. On relance donc la lecture nous-mêmes à chaque
+       fois que le carrousel est à l'écran, et on met tout en pause quand il n'y
+       est plus (batterie + fluidité du reste de la page). */
+    let inView = false;
+    new IntersectionObserver(es => {
+        es.forEach(en => {
+            inView = en.isIntersecting;
+            if (inView) syncVideos();
+            else slides.forEach(s => { const v = s.querySelector('video'); if (v && !v.paused) v.pause(); });
+        });
+    }, { threshold: 0 }).observe(viewport);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && inView) syncVideos(); });
+    /* Filet de sécurité : si l'IntersectionObserver tarde ou ne se déclenche pas,
+       on lance quand même l'aperçu visible — il ne doit JAMAIS rester figé. */
+    setTimeout(() => { if (!document.hidden) syncVideos(); }, 1200);
     document.getElementById('pj-prev').addEventListener('click', e => { e.preventDefault(); stopAutoTimer(); goTo(cur - 1); });
     document.getElementById('pj-next').addEventListener('click', e => { e.preventDefault(); stopAutoTimer(); goTo(cur + 1); });
     let swX = 0;
