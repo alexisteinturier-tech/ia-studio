@@ -4701,21 +4701,28 @@ Array.from(document.querySelectorAll('form.ia-form')).forEach(form => {
             v.autoplay = true; v.muted = true; v.defaultMuted = true; v.loop = true;
             v.playsInline = true; v.setAttribute('playsinline','');
             v.setAttribute('webkit-playsinline','');
-            v.preload = 'metadata';
-            if (poster) v.poster = poster;   /* jamais de cadre vide pendant le chargement */
+            v.preload = 'auto';
+            if (poster) v.poster = poster;
             v.setAttribute('aria-label', img.alt || '');
-            var replie = false;
-            function replier(){
-                if (replie || !v.parentNode) return; replie = true;
-                if (desktop) v.replaceWith(img);              /* desktop : retour au WebP */
-                else lireViaBlob(v, src, img.className, img.alt, poster);  /* mobile : blob */
-            }
-            function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-            v.addEventListener('error', replier);
-            v.addEventListener('loadeddata', lancer);
-            document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
-            setTimeout(function(){ if (v.readyState === 0) replier(); }, 6000);
-            img.replaceWith(v);
+            var fait = false;
+            /* On ne remplace le WebP QUE lorsque la vidéo est réellement prête.
+               L'aperçu ne peut donc JAMAIS redescendre en qualité : un réseau
+               lent retarde simplement la montée en netteté, sans jamais
+               réafficher l'image pixellisée à la place d'une vidéo déjà posée. */
+            v.addEventListener('loadeddata', function(){
+                if (fait || !img.parentNode) return; fait = true;
+                img.replaceWith(v);
+                var p = v.play(); if (p && p.catch) p.catch(function(){});
+            });
+            v.addEventListener('error', function(){
+                if (fait) return; fait = true;
+                /* mobile : dernier recours, lecture via blob ; desktop : on garde le WebP */
+                if (!desktop) lireViaBlob(img, src, img.className, img.alt, poster);
+            });
+            document.addEventListener('visibilitychange', function(){
+                if (!document.hidden && v.parentNode) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+            });
+            v.load();
         }
 
         /* Sur mobile on ne charge QUE l'aperçu réellement affiché : dans un
