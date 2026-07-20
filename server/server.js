@@ -121,7 +121,12 @@ const server = http.createServer((req, res) => {
             if (d.website) return send(res, 200, '{"ok":true}');
 
             const email = String(d.email || '').trim();
-            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !String(d.message || d.prenom || '').trim()) {
+            const tel = String(d.telephone || '').replace(/[^\d+]/g, '');
+            const hasEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+            const hasPhone = tel.length >= 8;
+            /* Un moyen de contact suffit : email valide OU numéro de téléphone
+               (le formulaire « être rappelé » n'a plus de champ email). */
+            if ((!hasEmail && !hasPhone) || !String(d.message || d.prenom || '').trim()) {
                 return send(res, 400, '{"ok":false,"error":"champs"}');
             }
 
@@ -129,6 +134,8 @@ const server = http.createServer((req, res) => {
                 date: new Date().toISOString(),
                 prenom: String(d.prenom || '').slice(0, 120),
                 email: email.slice(0, 200),
+                telephone: String(d.telephone || '').slice(0, 40),
+                horaire: String(d.horaire || '').slice(0, 60),
                 projet: String(d.projet || '').slice(0, 120),
                 message: String(d.message || '').slice(0, 4000),
                 ip: req.socket.remoteAddress
@@ -149,10 +156,12 @@ const server = http.createServer((req, res) => {
                 try {
                     await sendViaResend({
                         to: process.env.CONTACT_TO || 'bonjour@ia-studio.fr',
-                        replyTo: entry.email,
+                        replyTo: entry.email || undefined,
                         subject: 'Nouveau contact — ' + (entry.projet || 'projet') + (entry.prenom ? ' · ' + entry.prenom : ''),
                         text: 'Prénom : ' + entry.prenom + '\n' +
-                              'Email : ' + entry.email + '\n' +
+                              'Email : ' + (entry.email || '—') + '\n' +
+                              'Téléphone : ' + (entry.telephone || '—') + '\n' +
+                              'Rappel souhaité : ' + (entry.horaire || '—') + '\n' +
                               'Projet : ' + entry.projet + '\n\n' +
                               'Message :\n' + entry.message + '\n\n' +
                               '— envoyé depuis le site le ' + entry.date
@@ -172,9 +181,58 @@ const server = http.createServer((req, res) => {
     if (p === '/') p = '/index.html';
     const file = path.normalize(path.join(ROOT, p));
     if (!file.startsWith(ROOT)) return send(res, 403, 'Interdit', 'text/plain; charset=utf-8');
-    fs.readFile(file, (err, buf) => {
-        if (err) return send(res, 404, 'Introuvable', 'text/plain; charset=utf-8');
-        send(res, 200, buf, MIME[path.extname(file).toLowerCase()] || 'application/octet-stream');
+    /* ── Envoi statique AVEC support des requêtes Range ──
+       Safari iOS n'accepte de lire une <video> que si le serveur sait répondre
+       206 Partial Content à un en-tête Range. Sans ça il n'affiche même pas le
+       poster : juste un cadre noir avec un bouton « lecture » barré. Chrome
+       desktop, lui, se contente d'un 200 — d'où un bug invisible sur ordinateur
+       et bloquant sur iPhone. */
+    fs.stat(file, (err, st) => {
+        if (err || !st.isFile()) return send(res, 404, 'Introuvable', 'text/plain; charset=utf-8');
+        const ext = path.extname(file).toLowerCase();
+        const type = MIME[ext] || 'application/octet-stream';
+        /* Le HTML doit rester FRAIS (sinon une mise en ligne n'est pas visible
+           avant 24 h) ; seuls les médias et fichiers versionnés sont mis en cache. */
+        const cache = (ext === '.html' || ext === '.webmanifest' || ext === '.xml')
+            ? 'no-cache'
+            : 'public, max-age=86400';
+        const secu = {
+            'X-Content-Type-Options': 'nosniff',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Referrer-Policy': 'strict-origin-when-cross-origin',
+            'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
+        };
+        const range = req.headers.range;
+        const m = range && /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+        if (m) {
+            let start = m[1] === '' ? null : parseInt(m[1], 10);
+            let end = m[2] === '' ? null : parseInt(m[2], 10);
+            if (start === null) {            /* forme « bytes=-N » : les N derniers octets */
+                if (end === null || end === 0) { res.writeHead(416, { 'Content-Range': 'bytes */' + st.size }); return res.end(); }
+                start = Math.max(0, st.size - end); end = st.size - 1;
+            } else if (end === null || end >= st.size) { end = st.size - 1; }
+            if (start > end || start >= st.size) { res.writeHead(416, { 'Content-Range': 'bytes */' + st.size }); return res.end(); }
+            res.writeHead(206, Object.assign({}, secu, {
+                'Content-Type': type,
+                'Content-Range': 'bytes ' + start + '-' + end + '/' + st.size,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': end - start + 1,
+                'Cache-Control': cache
+            }));
+            if (req.method === 'HEAD') return res.end();
+            const s = fs.createReadStream(file, { start, end });
+            s.on('error', () => res.destroy()); s.pipe(res);
+            return;
+        }
+        res.writeHead(200, Object.assign({}, secu, {
+            'Content-Type': type,
+            'Content-Length': st.size,
+            'Accept-Ranges': 'bytes',
+            'Cache-Control': cache
+        }));
+        if (req.method === 'HEAD') return res.end();
+        const s = fs.createReadStream(file);
+        s.on('error', () => res.destroy()); s.pipe(res);
     });
 });
 
