@@ -769,6 +769,7 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
  border:1px solid var(--border-strong);background:#0b0d16;box-shadow:0 24px 60px -30px rgba(0,0,0,.85)}
 .pj-shot img,.pj-shot video{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 .pj-shot img{object-position:center 0%;animation:pjPan 16s ease-in-out infinite alternate}
+.pj-shot img.pj-anim{object-position:top;animation:none}
 @keyframes pjPan{from{object-position:center 0%}to{object-position:center 100%}}
 .pj-info{display:grid;gap:.7rem;align-content:center}
 .pj-name{font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:780;letter-spacing:-.045em;color:var(--fg-strong)}
@@ -933,7 +934,7 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
         <button class="pj-arrow" id="pj-prev" type="button" aria-label="Projet précédent">←</button>
         <div class="pj-viewport" id="pj-viewport">
           <a class="pj-slide is-active" href="https://bandia.fr/work/wild-stock" target="_blank" rel="noopener">
-            <span class="pj-shot"><video src="realisations-assets/wildstock-nav.mp4" poster="realisations-assets/wildstock.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Wild-Stock, navigation réelle dans l'application"></video></span>
+            <span class="pj-shot"><img class="pj-anim" src="realisations-assets/wildstock-nav.webp" data-video="realisations-assets/wildstock-nav.mp4" alt="Wild-Stock, navigation réelle dans l'application" loading="lazy" decoding="async"></span>
             <span class="pj-info">
               <span class="pj-name">Wild-Stock</span>
               <span class="pj-meta">APPLICATION SAAS · TEMPS RÉEL</span>
@@ -942,7 +943,7 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
             </span>
           </a>
           <a class="pj-slide" href="https://bandia.fr" target="_blank" rel="noopener">
-            <span class="pj-shot"><video src="realisations-assets/bandia-nav.mp4" poster="realisations-assets/bandia.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Bandia, navigation réelle du site"></video></span>
+            <span class="pj-shot"><img class="pj-anim" src="realisations-assets/bandia-nav.webp" data-video="realisations-assets/bandia-nav.mp4" alt="Bandia, navigation réelle du site" loading="lazy" decoding="async"></span>
             <span class="pj-info">
               <span class="pj-name">Bandia</span>
               <span class="pj-meta">STUDIO WEB SUR MESURE · PARIS</span>
@@ -1467,6 +1468,46 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
         if (Math.abs(dx) > 45) { stopAutoTimer(); goTo(cur + (dx < 0 ? 1 : -1)); }
     }, { passive: true });
 })();
+
+/* ══════════════════════════════════════
+   APERÇUS : WebP animé par défaut, VIDÉO sur desktop
+   ══════════════════════════════════════
+   Le HTML sert un WebP animé, qui marche partout (y compris iOS, où la <video>
+   restait noire faute de support des requêtes Range côté serveur). Sur un vrai
+   poste desktop on remonte en <video> : même rendu qu'avant, en plus fluide et
+   plus net. Si la vidéo échoue malgré tout (Safari strict sur les Range, réseau,
+   codec), on retombe automatiquement sur le WebP : l'aperçu n'est jamais noir. */
+(function upgradePreviews(){
+    var desktop = matchMedia('(hover: hover) and (pointer: fine)').matches
+               && window.innerWidth >= 900
+               && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!desktop) return;
+    document.querySelectorAll('img[data-video]').forEach(function(img){
+        var src = img.dataset.video; if (!src) return;
+        var v = document.createElement('video');
+        v.src = src; v.className = img.className;
+        v.autoplay = true; v.muted = true; v.loop = true;
+        v.playsInline = true; v.setAttribute('playsinline','');
+        v.preload = 'metadata';
+        v.setAttribute('aria-label', img.alt || '');
+        var revenu = false;
+        function revenirAuWebp(){                 /* filet : on ne laisse jamais un cadre noir */
+            if (revenu || !v.parentNode) return; revenu = true;
+            v.replaceWith(img);
+        }
+        function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        /* On ne retombe sur le WebP que si la vidéo a VRAIMENT échoué (erreur, ou
+           rien de chargé au bout de 6 s). Un play() refusé ne compte pas : c'est
+           le cas d'une page ouverte dans un onglet d'arrière-plan, où la vidéo est
+           bien là et démarrera au retour de l'onglet. */
+        v.addEventListener('error', revenirAuWebp);
+        v.addEventListener('loadeddata', lancer);
+        document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
+        setTimeout(function(){ if (v.readyState === 0) revenirAuWebp(); }, 6000);
+        img.replaceWith(v);
+    });
+})();
+
 </script>
 </body>
 </html>

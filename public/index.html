@@ -718,7 +718,7 @@
             border-radius: 999px;               /* pilules (maquette) */
             padding: 1.08rem 2.1rem;
             font-size: 1rem;
-            font-weight: 680;
+            font-weight: 450;                   /* texte sans gras (demande Alexis) */
         }
         /* Couche 1 = vague blanche (0% au repos → 100% au survol), couches
            suivantes = la teinte glacée d'origine. */
@@ -2325,6 +2325,8 @@
             width: 100%; height: 100%; object-fit: cover; object-position: center 0%;
             animation: workPanIdx 16s ease-in-out infinite alternate;
         }
+        .pj-shot img.pj-anim { object-position: top; animation: none; }   /* le WebP anime déjà : pas de panoramique */
+        /* la <video> remise sur desktop par upgradePreviews() */
         .pj-shot video { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
         @keyframes workPanIdx { from { object-position: center 0%; } to { object-position: center 100%; } }
         .pj-info { display: grid; gap: 0.7rem; align-content: center; }
@@ -2759,7 +2761,7 @@
                 <button class="pj-arrow" id="pj-prev" type="button" aria-label="Projet précédent">←</button>
                 <div class="pj-viewport" id="pj-viewport">
                     <a class="pj-slide is-active" href="https://bandia.fr/work/wild-stock" target="_blank" rel="noopener">
-                        <span class="pj-shot"><video src="realisations-assets/wildstock-nav.mp4" poster="realisations-assets/wildstock.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Wild-Stock, navigation réelle dans l'application"></video></span>
+                        <span class="pj-shot"><img class="pj-anim" src="realisations-assets/wildstock-nav.webp" data-video="realisations-assets/wildstock-nav.mp4" alt="Wild-Stock, navigation réelle dans l'application" loading="lazy" decoding="async"></span>
                         <span class="pj-info">
                             <span class="pj-name">Wild-Stock</span>
                             <span class="pj-meta">APPLICATION SAAS · TEMPS RÉEL</span>
@@ -2768,7 +2770,7 @@
                         </span>
                     </a>
                     <a class="pj-slide" href="https://bandia.fr" target="_blank" rel="noopener">
-                        <span class="pj-shot"><video src="realisations-assets/bandia-nav.mp4" poster="realisations-assets/bandia.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Bandia, navigation réelle du site"></video></span>
+                        <span class="pj-shot"><img class="pj-anim" src="realisations-assets/bandia-nav.webp" data-video="realisations-assets/bandia-nav.mp4" alt="Bandia, navigation réelle du site" loading="lazy" decoding="async"></span>
                         <span class="pj-info">
                             <span class="pj-name">Bandia</span>
                             <span class="pj-meta">STUDIO WEB SUR MESURE · PARIS</span>
@@ -4470,22 +4472,10 @@ setTimeout(updateScene, 100);
         dotsBox.appendChild(d);
         return d;
     });
-    /* Les slides inactives sont en visibility:hidden : sur mobile le navigateur
-       n'y démarre jamais la lecture. On relance donc explicitement la vidéo de la
-       slide affichée (et on met les autres en pause, ça économise la batterie). */
-    function syncVideos() {
-        slides.forEach((s, n) => {
-            const v = s.querySelector('video');
-            if (!v) return;
-            if (n === cur) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-            else if (!v.paused) v.pause();
-        });
-    }
     function goTo(i) {
         cur = ((i % slides.length) + slides.length) % slides.length;
         slides.forEach((s, n) => s.classList.toggle('is-active', n === cur));
         dots.forEach((d, n) => d.classList.toggle('is-active', n === cur));
-        syncVideos();
     }
     /* Défilement auto volontairement SOBRE : un seul pas, lent —
        Wild-Stock ouvre, puis Bandia arrive, et ça s'arrête là.
@@ -4506,25 +4496,9 @@ setTimeout(updateScene, 100);
     }, { rootMargin: '-20% 0px -20% 0px', threshold: 0 });
     io.observe(viewport);
 
-    /* ── Lecture des aperçus ──
-       L'attribut `autoplay` ne suffit pas : dès que l'onglet passe en arrière-plan
-       (ou sur mobile, où la politique d'autoplay est stricte et où les slides
-       inactives sont en visibility:hidden), les vidéos restent EN PAUSE et les
-       aperçus paraissent figés. On relance donc la lecture nous-mêmes à chaque
-       fois que le carrousel est à l'écran, et on met tout en pause quand il n'y
-       est plus (batterie + fluidité du reste de la page). */
-    let inView = false;
-    new IntersectionObserver(es => {
-        es.forEach(en => {
-            inView = en.isIntersecting;
-            if (inView) syncVideos();
-            else slides.forEach(s => { const v = s.querySelector('video'); if (v && !v.paused) v.pause(); });
-        });
-    }, { threshold: 0 }).observe(viewport);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden && inView) syncVideos(); });
-    /* Filet de sécurité : si l'IntersectionObserver tarde ou ne se déclenche pas,
-       on lance quand même l'aperçu visible — il ne doit JAMAIS rester figé. */
-    setTimeout(() => { if (!document.hidden) syncVideos(); }, 1200);
+    /* Les aperçus sont désormais des WebP ANIMÉS (et non plus des <video>) : ils
+       tournent tout seuls, sans politique d'autoplay ni requêtes Range côté
+       serveur — c'est ce qui les rendait noirs sur iPhone. Rien à piloter ici. */
     document.getElementById('pj-prev').addEventListener('click', e => { e.preventDefault(); stopAutoTimer(); goTo(cur - 1); });
     document.getElementById('pj-next').addEventListener('click', e => { e.preventDefault(); stopAutoTimer(); goTo(cur + 1); });
     let swX = 0;
@@ -4669,6 +4643,46 @@ Array.from(document.querySelectorAll('form.ia-form')).forEach(form => {
         es.forEach(en => { if (en.isIntersecting) { s.classList.add('stats-in', 'stats-live'); io.disconnect(); } });
     }, { threshold: 0.3 }).observe(s);
 })();
+
+/* ══════════════════════════════════════
+   APERÇUS : WebP animé par défaut, VIDÉO sur desktop
+   ══════════════════════════════════════
+   Le HTML sert un WebP animé, qui marche partout (y compris iOS, où la <video>
+   restait noire faute de support des requêtes Range côté serveur). Sur un vrai
+   poste desktop on remonte en <video> : même rendu qu'avant, en plus fluide et
+   plus net. Si la vidéo échoue malgré tout (Safari strict sur les Range, réseau,
+   codec), on retombe automatiquement sur le WebP : l'aperçu n'est jamais noir. */
+(function upgradePreviews(){
+    var desktop = matchMedia('(hover: hover) and (pointer: fine)').matches
+               && window.innerWidth >= 900
+               && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!desktop) return;
+    document.querySelectorAll('img[data-video]').forEach(function(img){
+        var src = img.dataset.video; if (!src) return;
+        var v = document.createElement('video');
+        v.src = src; v.className = img.className;
+        v.autoplay = true; v.muted = true; v.loop = true;
+        v.playsInline = true; v.setAttribute('playsinline','');
+        v.preload = 'metadata';
+        v.setAttribute('aria-label', img.alt || '');
+        var revenu = false;
+        function revenirAuWebp(){                 /* filet : on ne laisse jamais un cadre noir */
+            if (revenu || !v.parentNode) return; revenu = true;
+            v.replaceWith(img);
+        }
+        function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        /* On ne retombe sur le WebP que si la vidéo a VRAIMENT échoué (erreur, ou
+           rien de chargé au bout de 6 s). Un play() refusé ne compte pas : c'est
+           le cas d'une page ouverte dans un onglet d'arrière-plan, où la vidéo est
+           bien là et démarrera au retour de l'onglet. */
+        v.addEventListener('error', revenirAuWebp);
+        v.addEventListener('loadeddata', lancer);
+        document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
+        setTimeout(function(){ if (v.readyState === 0) revenirAuWebp(); }, 6000);
+        img.replaceWith(v);
+    });
+})();
+
 </script>
 </body>
 </html>

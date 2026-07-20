@@ -285,7 +285,7 @@
         /* Session de navigation RÉELLE (enregistrement d'Alexis) : le site vit
            dans la carte — scroll, clics, animations d'origine. */
         .preview-img.is-live { height: 100%; object-fit: cover; object-position: top; animation: none; }
-        .shot video.preview-vid {
+        .shot .preview-vid {
             position: absolute; inset: 0;
             width: 100%; height: 100%;
             object-fit: cover; object-position: top;
@@ -514,7 +514,7 @@
                 <div class="card-inner">
                     <span class="card-type">Studio web · Paris</span>
                     <div class="shot">
-                        <video class="preview-vid" src="realisations-assets/bandia-nav.mp4" poster="realisations-assets/bandia.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Bandia · Studio web sur mesure, navigation réelle du site"></video>
+                        <img class="preview-vid" src="realisations-assets/bandia-nav.webp" data-video="realisations-assets/bandia-nav.mp4" alt="Bandia · Studio web sur mesure, navigation réelle du site" loading="lazy" decoding="async">
                     </div>
                 </div>
                 <span class="card-tag">Bandia · Site vitrine <span class="arrow">→</span></span>
@@ -524,7 +524,7 @@
                 <div class="card-inner">
                     <span class="card-type">Application SaaS · Temps réel</span>
                     <div class="shot">
-                        <video class="preview-vid" src="realisations-assets/wildstock-nav.mp4" poster="realisations-assets/wildstock.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Wild-Stock · Application temps réel, navigation réelle dans l'application"></video>
+                        <img class="preview-vid" src="realisations-assets/wildstock-nav.webp" data-video="realisations-assets/wildstock-nav.mp4" alt="Wild-Stock · Application temps réel, navigation réelle dans l'application" loading="lazy" decoding="async">
                     </div>
                 </div>
                 <span class="card-tag">Wild-Stock · App sur mesure <span class="arrow">→</span></span>
@@ -979,6 +979,46 @@
         document.getElementById('viewer-close').addEventListener('click', closeViewer);
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeViewer(); });
     })();
-    </script>
+    
+/* ══════════════════════════════════════
+   APERÇUS : WebP animé par défaut, VIDÉO sur desktop
+   ══════════════════════════════════════
+   Le HTML sert un WebP animé, qui marche partout (y compris iOS, où la <video>
+   restait noire faute de support des requêtes Range côté serveur). Sur un vrai
+   poste desktop on remonte en <video> : même rendu qu'avant, en plus fluide et
+   plus net. Si la vidéo échoue malgré tout (Safari strict sur les Range, réseau,
+   codec), on retombe automatiquement sur le WebP : l'aperçu n'est jamais noir. */
+(function upgradePreviews(){
+    var desktop = matchMedia('(hover: hover) and (pointer: fine)').matches
+               && window.innerWidth >= 900
+               && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!desktop) return;
+    document.querySelectorAll('img[data-video]').forEach(function(img){
+        var src = img.dataset.video; if (!src) return;
+        var v = document.createElement('video');
+        v.src = src; v.className = img.className;
+        v.autoplay = true; v.muted = true; v.loop = true;
+        v.playsInline = true; v.setAttribute('playsinline','');
+        v.preload = 'metadata';
+        v.setAttribute('aria-label', img.alt || '');
+        var revenu = false;
+        function revenirAuWebp(){                 /* filet : on ne laisse jamais un cadre noir */
+            if (revenu || !v.parentNode) return; revenu = true;
+            v.replaceWith(img);
+        }
+        function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        /* On ne retombe sur le WebP que si la vidéo a VRAIMENT échoué (erreur, ou
+           rien de chargé au bout de 6 s). Un play() refusé ne compte pas : c'est
+           le cas d'une page ouverte dans un onglet d'arrière-plan, où la vidéo est
+           bien là et démarrera au retour de l'onglet. */
+        v.addEventListener('error', revenirAuWebp);
+        v.addEventListener('loadeddata', lancer);
+        document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
+        setTimeout(function(){ if (v.readyState === 0) revenirAuWebp(); }, 6000);
+        img.replaceWith(v);
+    });
+})();
+
+</script>
 </body>
 </html>
