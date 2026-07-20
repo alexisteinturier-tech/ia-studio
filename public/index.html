@@ -4687,54 +4687,47 @@ Array.from(document.querySelectorAll('form.ia-form')).forEach(form => {
         var src = img.dataset.video; if (!src) return;
         var poster = img.dataset.poster || '';
 
-        if (!desktop) {
-            /* Mobile : on tente d'abord le WebP animé (léger). S'il manque ou
-               échoue, on bascule sur la vidéo lue en blob. */
-            /* On ne télécharge QUE l'aperçu réellement affiché : dans un
-               carrousel, charger les deux vidéos ferait 7 Mo de data pour rien.
-               Une slide inactive attend de devenir active pour se charger. */
-            var slide = img.closest('.pj-slide');
-            var lance = false;
-            function demarrer(){
-                if (lance) return;
-                if (slide && !slide.classList.contains('is-active')) return;
-                lance = true;
-                lireViaBlob(img, src, img.className, img.alt, poster);
+        /* Le serveur répond désormais 206 Partial Content aux requêtes Range
+           (voir server.js) : iOS sait donc lire la <video> nativement, en
+           streaming progressif. On sert la vidéo partout — elle est à la fois
+           PLUS NETTE (960px natifs contre 640px pour le WebP) et PLUS LÉGÈRE
+           (223/415 Ko après passage de 600 fps à 30 fps). Filets de sécurité
+           conservés : blob si le natif échoue sur mobile, WebP en dernier ressort. */
+        var slide = img.closest('.pj-slide');
+
+        function poserVideo(){
+            var v = document.createElement('video');
+            v.src = src; v.className = img.className;
+            v.autoplay = true; v.muted = true; v.defaultMuted = true; v.loop = true;
+            v.playsInline = true; v.setAttribute('playsinline','');
+            v.setAttribute('webkit-playsinline','');
+            v.preload = 'metadata';
+            if (poster) v.poster = poster;   /* jamais de cadre vide pendant le chargement */
+            v.setAttribute('aria-label', img.alt || '');
+            var replie = false;
+            function replier(){
+                if (replie || !v.parentNode) return; replie = true;
+                if (desktop) v.replaceWith(img);              /* desktop : retour au WebP */
+                else lireViaBlob(v, src, img.className, img.alt, poster);  /* mobile : blob */
             }
-            function surEchec(){
-                if (slide && !slide.classList.contains('is-active')) {
-                    /* on retentera dès que cette slide passera au premier plan */
-                    new MutationObserver(function(_, obs){
-                        if (slide.classList.contains('is-active')) { obs.disconnect(); demarrer(); }
-                    }).observe(slide, { attributes: true, attributeFilter: ['class'] });
-                    return;
-                }
-                demarrer();
-            }
-            img.addEventListener('error', surEchec);
-            /* si l'image est déjà en erreur au moment où le script s'exécute */
-            if (img.complete && img.naturalWidth === 0) surEchec();
-            return;
+            function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+            v.addEventListener('error', replier);
+            v.addEventListener('loadeddata', lancer);
+            document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
+            setTimeout(function(){ if (v.readyState === 0) replier(); }, 6000);
+            img.replaceWith(v);
         }
 
-        /* Desktop : <video> classique, exactement comme avant. */
-        var v = document.createElement('video');
-        v.src = src; v.className = img.className;
-        v.autoplay = true; v.muted = true; v.loop = true;
-        v.playsInline = true; v.setAttribute('playsinline','');
-        v.preload = 'metadata';
-        v.setAttribute('aria-label', img.alt || '');
-        var revenu = false;
-        function revenirAuWebp(){
-            if (revenu || !v.parentNode) return; revenu = true;
-            v.replaceWith(img);
+        /* Sur mobile on ne charge QUE l'aperçu réellement affiché : dans un
+           carrousel, charger les deux vidéos serait de la data pour rien.
+           Une slide inactive attend de passer au premier plan. */
+        if (!desktop && slide && !slide.classList.contains('is-active')) {
+            new MutationObserver(function(_, obs){
+                if (slide.classList.contains('is-active')) { obs.disconnect(); poserVideo(); }
+            }).observe(slide, { attributes: true, attributeFilter: ['class'] });
+            return;
         }
-        function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-        v.addEventListener('error', revenirAuWebp);
-        v.addEventListener('loadeddata', lancer);
-        document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
-        setTimeout(function(){ if (v.readyState === 0) revenirAuWebp(); }, 6000);
-        img.replaceWith(v);
+        poserVideo();
     });
 })();
 
