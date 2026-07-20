@@ -934,7 +934,7 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
         <button class="pj-arrow" id="pj-prev" type="button" aria-label="Projet précédent">←</button>
         <div class="pj-viewport" id="pj-viewport">
           <a class="pj-slide is-active" href="https://bandia.fr/work/wild-stock" target="_blank" rel="noopener">
-            <span class="pj-shot"><img class="pj-anim" src="realisations-assets/wildstock-nav.webp" data-video="realisations-assets/wildstock-nav.mp4" alt="Wild-Stock, navigation réelle dans l'application" loading="lazy" decoding="async"></span>
+            <span class="pj-shot"><img class="pj-anim" src="realisations-assets/wildstock-nav.webp" data-video="realisations-assets/wildstock-nav.mp4" data-poster="realisations-assets/wildstock.jpg" alt="Wild-Stock, navigation réelle dans l'application" loading="lazy" decoding="async"></span>
             <span class="pj-info">
               <span class="pj-name">Wild-Stock</span>
               <span class="pj-meta">APPLICATION SAAS · TEMPS RÉEL</span>
@@ -943,7 +943,7 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
             </span>
           </a>
           <a class="pj-slide" href="https://bandia.fr" target="_blank" rel="noopener">
-            <span class="pj-shot"><img class="pj-anim" src="realisations-assets/bandia-nav.webp" data-video="realisations-assets/bandia-nav.mp4" alt="Bandia, navigation réelle du site" loading="lazy" decoding="async"></span>
+            <span class="pj-shot"><img class="pj-anim" src="realisations-assets/bandia-nav.webp" data-video="realisations-assets/bandia-nav.mp4" data-poster="realisations-assets/bandia.jpg" alt="Bandia, navigation réelle du site" loading="lazy" decoding="async"></span>
             <span class="pj-info">
               <span class="pj-name">Bandia</span>
               <span class="pj-meta">STUDIO WEB SUR MESURE · PARIS</span>
@@ -1481,9 +1481,68 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
     var desktop = matchMedia('(hover: hover) and (pointer: fine)').matches
                && window.innerWidth >= 900
                && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (!desktop) return;
+
+    /* ── Lecture via BLOB (chemin mobile) ──
+       Safari iOS refuse une <video> dont le serveur ne sait pas répondre 206 à
+       une requête Range — c'est le cas ici. Contournement : on télécharge le
+       fichier en un GET simple (ça, le serveur sait faire), on en fait un blob
+       local, et on lit depuis l'URL du blob : plus aucune requête Range en jeu.
+       On ne charge que l'aperçu réellement affiché, pour ménager la data. */
+    function lireViaBlob(cible, srcVideo, classe, texte, poster){
+        fetch(srcVideo).then(function(r){
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.blob();
+        }).then(function(blob){
+            var v = document.createElement('video');
+            v.src = URL.createObjectURL(blob);
+            v.className = classe;
+            v.autoplay = true; v.muted = true; v.defaultMuted = true; v.loop = true;
+            v.playsInline = true; v.setAttribute('playsinline','');
+            v.setAttribute('webkit-playsinline','');
+            if (poster) v.poster = poster;
+            v.setAttribute('aria-label', texte || '');
+            v.addEventListener('loadeddata', function(){
+                var p = v.play(); if (p && p.catch) p.catch(function(){});
+            });
+            if (cible.parentNode) cible.replaceWith(v);
+        }).catch(function(){ /* on garde l'élément en place (poster/alt) */ });
+    }
+
     document.querySelectorAll('img[data-video]').forEach(function(img){
         var src = img.dataset.video; if (!src) return;
+        var poster = img.dataset.poster || '';
+
+        if (!desktop) {
+            /* Mobile : on tente d'abord le WebP animé (léger). S'il manque ou
+               échoue, on bascule sur la vidéo lue en blob. */
+            /* On ne télécharge QUE l'aperçu réellement affiché : dans un
+               carrousel, charger les deux vidéos ferait 7 Mo de data pour rien.
+               Une slide inactive attend de devenir active pour se charger. */
+            var slide = img.closest('.pj-slide');
+            var lance = false;
+            function demarrer(){
+                if (lance) return;
+                if (slide && !slide.classList.contains('is-active')) return;
+                lance = true;
+                lireViaBlob(img, src, img.className, img.alt, poster);
+            }
+            function surEchec(){
+                if (slide && !slide.classList.contains('is-active')) {
+                    /* on retentera dès que cette slide passera au premier plan */
+                    new MutationObserver(function(_, obs){
+                        if (slide.classList.contains('is-active')) { obs.disconnect(); demarrer(); }
+                    }).observe(slide, { attributes: true, attributeFilter: ['class'] });
+                    return;
+                }
+                demarrer();
+            }
+            img.addEventListener('error', surEchec);
+            /* si l'image est déjà en erreur au moment où le script s'exécute */
+            if (img.complete && img.naturalWidth === 0) surEchec();
+            return;
+        }
+
+        /* Desktop : <video> classique, exactement comme avant. */
         var v = document.createElement('video');
         v.src = src; v.className = img.className;
         v.autoplay = true; v.muted = true; v.loop = true;
@@ -1491,15 +1550,11 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
         v.preload = 'metadata';
         v.setAttribute('aria-label', img.alt || '');
         var revenu = false;
-        function revenirAuWebp(){                 /* filet : on ne laisse jamais un cadre noir */
+        function revenirAuWebp(){
             if (revenu || !v.parentNode) return; revenu = true;
             v.replaceWith(img);
         }
         function lancer(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-        /* On ne retombe sur le WebP que si la vidéo a VRAIMENT échoué (erreur, ou
-           rien de chargé au bout de 6 s). Un play() refusé ne compte pas : c'est
-           le cas d'une page ouverte dans un onglet d'arrière-plan, où la vidéo est
-           bien là et démarrera au retour de l'onglet. */
         v.addEventListener('error', revenirAuWebp);
         v.addEventListener('loadeddata', lancer);
         document.addEventListener('visibilitychange', function(){ if (!document.hidden) lancer(); });
