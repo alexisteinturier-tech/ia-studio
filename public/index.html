@@ -2520,6 +2520,52 @@
 .cf-status.is-ok{color:#7ee3b0}
 .cf-status.is-error{color:#ff9d9d}
 </style>
+<!-- ═══ Google Ads (gtag) + Consent Mode v2 ═══════════════════════════
+     Le consentement est REFUSÉ par défaut : aucun cookie publicitaire
+     n'est déposé tant que le visiteur n'a pas cliqué « Accepter »
+     (exigence CNIL). Consent Mode v2 est par ailleurs imposé par Google
+     pour le trafic européen : sans lui, les conversions sont dégradées. -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    wait_for_update: 500
+  });
+  try {
+    if (localStorage.getItem('ia-consent') === 'granted') {
+      gtag('consent', 'update', {
+        ad_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted',
+        analytics_storage: 'granted'
+      });
+    }
+  } catch (e) {}
+  gtag('js', new Date());
+  gtag('config', 'AW-18313995209');
+
+  /* ── CONVERSIONS ─────────────────────────────────────────────────
+     Collez ci-dessous l'identifiant de l'action de conversion fourni
+     par Google Ads (Objectifs → Conversions → votre action → « Balise »).
+     Format attendu : 'AW-18313995209/AbC-D_efGhIjKlM'
+     Tant que la ligne est vide, aucune conversion n'est envoyée : le
+     reste du site fonctionne normalement. */
+  window.IA_ADS_CONVERSION = '';
+
+  /* Déclenche une conversion (ignorée si l'ID est vide ou consentement refusé) */
+  window.iaConversion = function (nom) {
+    try { if (window.dataLayer) window.dataLayer.push({ event: nom || 'conversion' }); } catch (e) {}
+    if (window.IA_ADS_CONVERSION && typeof gtag === 'function') {
+      gtag('event', 'conversion', { send_to: window.IA_ADS_CONVERSION });
+    }
+  };
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18313995209"></script>
+
 </head>
 <body>
     <!-- Logo « ia studio » — définition SVG partagée (utilisée par tous les headers) -->
@@ -4112,6 +4158,7 @@ setupReveal('.presence-text h2', 50, 0.4);
             if (btn) btn.innerHTML = 'Message envoyé ✓';
             status.textContent = 'Alexis et Simon ont bien reçu votre demande ✓' + (payload.prenom ? ' Merci ' + payload.prenom + ' !' : '') + ' Réponse sous 24 h ouvrées.';
             status.classList.add('is-ok');
+            window.iaConversion('contact_email');
             form.querySelectorAll('input,select,textarea').forEach(el => el.disabled = true);
         } catch (err) {
             if (btn) { btn.disabled = false; btn.innerHTML = prev; }
@@ -4588,7 +4635,7 @@ Cal.ns["30min"]("ui", { theme: "dark", cssVarsPerTheme: { dark: { "cal-brand": "
 
 Cal.ns["30min"]("on", {
     action: "bookingSuccessful",
-    callback: function () { if (window.dataLayer) window.dataLayer.push({ event: 'rdv_reserve' }); }
+    callback: function () { window.iaConversion('rdv_reserve'); }
 });
 </script>
 <script>
@@ -4627,6 +4674,7 @@ Array.from(document.querySelectorAll('form.ia-form')).forEach(form => {
             btn.innerHTML = 'Message envoyé ✓';
             status.textContent = 'Merci' + (payload.prenom ? ' ' + payload.prenom : '') + ' ! Alexis et Simon vous répondent sous 24 h ouvrées.';
             status.classList.add('is-ok');
+            window.iaConversion('contact_email');
             form.querySelectorAll('input,select,textarea').forEach(el => el.disabled = true);
         } catch (err) {
             btn.disabled = false; btn.innerHTML = prev;
@@ -4739,5 +4787,60 @@ Array.from(document.querySelectorAll('form.ia-form')).forEach(form => {
 })();
 
 </script>
+<!-- ═══ Bandeau de consentement cookies (CNIL) ═══ -->
+<div class="ia-ck" id="ia-ck" role="dialog" aria-label="Gestion des cookies" hidden>
+  <p class="ia-ck-t">Nous utilisons des cookies de <strong>mesure publicitaire</strong> pour savoir quelles annonces amènent des visiteurs. Rien n'est déposé sans votre accord. <a href="mentions-legales.html#cookies">En savoir plus</a></p>
+  <div class="ia-ck-b">
+    <button type="button" id="ia-ck-no">Refuser</button>
+    <button type="button" id="ia-ck-ok" class="ia-ck-ok">Accepter</button>
+  </div>
+</div>
+<style>
+.ia-ck{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(120%);z-index:9999;
+  width:min(680px,calc(100vw - 2rem));display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:1rem 1.15rem;border-radius:16px;background:rgba(14,14,20,.94);border:1px solid rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+  box-shadow:0 18px 50px -12px rgba(0,0,0,.7);
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#f5f5f7;
+  opacity:0;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .45s ease}
+.ia-ck.is-in{transform:translateX(-50%) translateY(0);opacity:1}
+.ia-ck-t{flex:1 1 300px;margin:0;font-size:.86rem;line-height:1.5;color:#d4d5dd}
+.ia-ck-t strong{color:#fff;font-weight:600}
+.ia-ck-t a{color:#8be9ff;text-decoration:underline;text-underline-offset:2px}
+.ia-ck-b{display:flex;gap:.5rem;flex:0 0 auto;margin-left:auto}
+.ia-ck button{font:inherit;font-size:.84rem;font-weight:600;cursor:pointer;padding:.6rem 1.1rem;
+  border-radius:2rem;border:1px solid rgba(255,255,255,.2);background:transparent;color:#f5f5f7;
+  transition:background .25s,border-color .25s,transform .25s}
+.ia-ck button:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.35);transform:translateY(-1px)}
+.ia-ck .ia-ck-ok{background:linear-gradient(120deg,#8be9ff,#5aa7ff 48%,#aa91ff);color:#08080c;border-color:transparent}
+.ia-ck .ia-ck-ok:hover{filter:brightness(1.08)}
+@media(max-width:560px){.ia-ck{gap:.75rem}.ia-ck-b{margin-left:0;width:100%}.ia-ck button{flex:1}}
+@media(prefers-reduced-motion:reduce){.ia-ck{transition:none}}
+</style>
+<script>
+(function(){
+  var K='ia-consent', el=document.getElementById('ia-ck');
+  if(!el) return;
+  var vu;
+  try{ vu=localStorage.getItem(K); }catch(e){ vu=null; }
+  function reponse(ok){
+    try{ localStorage.setItem(K, ok?'granted':'denied'); }catch(e){}
+    if(ok && typeof gtag==='function'){
+      gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',
+        ad_personalization:'granted',analytics_storage:'granted'});
+    }
+    el.classList.remove('is-in');
+    setTimeout(function(){ el.hidden=true; }, 450);
+  }
+  document.getElementById('ia-ck-ok').addEventListener('click',function(){reponse(true);});
+  document.getElementById('ia-ck-no').addEventListener('click',function(){reponse(false);});
+  /* on n'affiche le bandeau que si aucun choix n'a encore été fait */
+  if(vu!=='granted' && vu!=='denied'){
+    el.hidden=false;
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('is-in'); }); });
+  }
+})();
+</script>
+
 </body>
 </html>
