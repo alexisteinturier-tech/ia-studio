@@ -1407,6 +1407,81 @@
             .founder-bio { font-size: 0.92rem; }
         }
 
+        /* ── DUO FONDATEURS : deux visages côte à côte, vivants (flottement + légère rotation) ── */
+        .duo {
+            max-width: 760px; margin: 0 auto;
+            display: flex; flex-direction: column; align-items: center;
+            gap: clamp(1.8rem, 4vw, 2.6rem);
+        }
+        .duo-faces {
+            display: flex; justify-content: center; align-items: flex-start;
+            gap: clamp(1.5rem, 6vw, 4rem);
+            flex-wrap: wrap;
+        }
+        .duo-card {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            gap: 0.25rem; width: clamp(140px, 22vw, 200px);
+        }
+        .duo-photo {
+            position: relative;
+            width: clamp(130px, 17vw, 190px); height: clamp(130px, 17vw, 190px);
+            border-radius: 50%; overflow: hidden;
+            margin-bottom: 0.9rem;
+            border: 1px solid var(--border-strong);
+            box-shadow: 0 18px 50px -18px rgba(139,233,255,.4);
+            background: var(--bg-2);
+            will-change: transform;
+            transition: box-shadow .4s var(--ease), border-color .4s var(--ease);
+        }
+        /* halo dégradé qui respire derrière chaque visage */
+        .duo-photo::after {
+            content: ''; position: absolute; inset: -6px;
+            border-radius: 50%; z-index: -1;
+            background: var(--gradient); opacity: .5;
+            filter: blur(14px);
+        }
+        .duo-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; display: block; }
+        /* flottement : deux animations décalées → jamais synchrones, effet « vivant » */
+        .duo-card:nth-child(1) .duo-photo { animation: duoFloatA 6.5s ease-in-out infinite; }
+        .duo-card:nth-child(2) .duo-photo { animation: duoFloatB 7.5s ease-in-out infinite .4s; }
+        @keyframes duoFloatA {
+            0%,100% { transform: translateY(0) rotate(-2.2deg); }
+            50%     { transform: translateY(-11px) rotate(2.2deg); }
+        }
+        @keyframes duoFloatB {
+            0%,100% { transform: translateY(-7px) rotate(2deg); }
+            50%     { transform: translateY(7px) rotate(-2.4deg); }
+        }
+        .duo-card:hover .duo-photo {
+            border-color: rgba(139,233,255,.6);
+            box-shadow: 0 22px 60px -16px rgba(139,233,255,.55);
+        }
+        .duo-name {
+            font-family: var(--font-title);
+            font-size: clamp(1.2rem, 1.8vw, 1.55rem); font-weight: 700; letter-spacing: -0.02em;
+        }
+        .duo-role {
+            font-size: 0.82rem; color: var(--accent); font-weight: 600;
+            letter-spacing: 0.03em; margin-bottom: 0.4rem;
+        }
+        .duo-mini {
+            font-size: 0.86rem; line-height: 1.5; color: var(--fg-muted);
+            max-width: 24ch; text-shadow: var(--text-shadow);
+        }
+        .duo-blurb {
+            text-align: center; max-width: 56ch;
+            font-size: clamp(1rem, 1.15vw, 1.12rem); line-height: 1.7;
+            color: var(--fg-muted); text-shadow: var(--text-shadow);
+        }
+        .duo-blurb strong { color: var(--fg-strong); font-weight: 600; }
+        @media (prefers-reduced-motion: reduce) {
+            .duo-photo { animation: none !important; }
+        }
+        @media (max-width: 420px) {
+            .duo-faces { gap: 1.2rem; }
+            .duo-card { width: 44%; }
+        }
+
         /* ════════════════════════════════════════════════════
            7. CONTACT
            ════════════════════════════════════════════════════ */
@@ -2910,24 +2985,26 @@
                     Quand vous travaillez avec ia studio, vous travaillez <strong>directement avec Alexis et Simon</strong>. Toujours. Chaque projet est traité comme s'il était le seul.
                 </p>
             </div>
-            <div class="team-carousel glass" id="team-carousel">
-                <button class="tc-arrow" id="tc-prev" aria-label="Fondateur précédent">←</button>
-                <div class="tc-viewport" id="tc-viewport">
-                    <div class="tc-slide is-active">
-                        <span class="founder-photo"><img src="team-alexis.jpg" alt="Alexis, cofondateur d'ia studio" width="400" height="400" loading="eager" decoding="async"></span>
-                    <h3 class="founder-name">Alexis</h3>
-                        <p class="founder-role">Stratégie · Déploiement</p>
-                        <p class="founder-bio">Votre interlocuteur direct, de la première discussion jusqu'à la livraison. <strong>Accès direct, écoute fine, 100% humain</strong> : il fait le pont entre la technologie et votre métier, pour que vous n'ayez jamais à le faire.</p>
+            <div class="duo">
+                <div class="duo-faces">
+                    <div class="duo-card">
+                        <span class="duo-photo"><img src="team-alexis.jpg" alt="Alexis, cofondateur d'ia studio" width="400" height="400" loading="eager" decoding="async"></span>
+                        <h3 class="duo-name">Alexis</h3>
+                        <p class="duo-role">Stratégie · Déploiement</p>
+                        <p class="duo-mini">Votre interlocuteur, de la première idée à la mise en ligne.</p>
                     </div>
-                    <div class="tc-slide">
-                        <span class="founder-initial" aria-hidden="true">S</span>
-                        <h3 class="founder-name">Simon</h3>
-                        <p class="founder-role">Architecte IA · Technologie</p>
-                        <p class="founder-bio">Il vit dans l'IA depuis ses débuts et transforme les problèmes complexes en outils qui marchent dès le premier jour. <strong>Sa force : rendre simple ce qui est compliqué.</strong></p>
+                    <div class="duo-card">
+                        <span class="duo-photo"><img src="team-simon.jpg" alt="Simon, cofondateur d'ia studio" width="400" height="400" loading="eager" decoding="async"></span>
+                        <h3 class="duo-name">Simon</h3>
+                        <p class="duo-role">Architecte IA · Technologie</p>
+                        <p class="duo-mini">Il transforme les problèmes complexes en outils qui marchent.</p>
                     </div>
                 </div>
-                <button class="tc-arrow" id="tc-next" aria-label="Fondateur suivant">→</button>
-                <div class="tc-dots" id="tc-dots" aria-hidden="true"></div>
+                <p class="duo-blurb">
+                    Deux associés, deux savoir-faire complémentaires — <strong>la stratégie et la technique réunies dans le même duo</strong>.
+                    Vous parlez toujours directement à ceux qui conçoivent et livrent votre projet : <strong>aucun intermédiaire, aucun commercial</strong>.
+                    On vit dans l'IA depuis ses débuts et on la met au service de votre activité, sans jargon, avec un seul objectif : que ça marche pour vous.
+                </p>
             </div>
         </div>
     </section>
