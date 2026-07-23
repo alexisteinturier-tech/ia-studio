@@ -1123,7 +1123,7 @@
 </script>
 <!-- ═══ Bandeau de consentement cookies (CNIL) ═══ -->
 <div class="ia-ck" id="ia-ck" role="dialog" aria-label="Gestion des cookies" hidden>
-  <p class="ia-ck-t">Nous utilisons des cookies de <strong>mesure publicitaire</strong> pour savoir quelles annonces amènent des visiteurs. Rien n'est déposé sans votre accord. <a href="mentions-legales.html#cookies">En savoir plus</a></p>
+  <p class="ia-ck-t">Nous utilisons des cookies de <strong>mesure publicitaire et d'audience</strong> pour comprendre ce qui amène des visiteurs et améliorer le site. Rien n'est déposé sans votre accord. <a href="mentions-legales.html#cookies">En savoir plus</a></p>
   <div class="ia-ck-b">
     <button type="button" id="ia-ck-no">Refuser</button>
     <button type="button" id="ia-ck-ok" class="ia-ck-ok">Accepter</button>
@@ -1153,15 +1153,32 @@
 </style>
 <script>
 (function(){
-  var K='ia-consent', el=document.getElementById('ia-ck');
-  if(!el) return;
+  var K='ia-consent';
+  /* ── Contentsquare (suivi de comportement) : chargé UNIQUEMENT après
+     consentement, jamais avant (exigence CNIL). ── */
+  var csCharge=false;
+  function chargerContentsquare(){
+    if(csCharge) return; csCharge=true;
+    var s=document.createElement('script');
+    s.src='https://t.contentsquare.net/uxa/0912f345bb852.js';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
   var vu;
   try{ vu=localStorage.getItem(K); }catch(e){ vu=null; }
+  /* consentement déjà donné lors d'une visite précédente → on (re)charge le suivi */
+  if(vu==='granted') chargerContentsquare();
+
+  var el=document.getElementById('ia-ck');
+  if(!el) return;
   function reponse(ok){
     try{ localStorage.setItem(K, ok?'granted':'denied'); }catch(e){}
-    if(ok && typeof gtag==='function'){
-      gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',
-        ad_personalization:'granted',analytics_storage:'granted'});
+    if(ok){
+      if(typeof gtag==='function'){
+        gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',
+          ad_personalization:'granted',analytics_storage:'granted'});
+      }
+      chargerContentsquare();
     }
     el.classList.remove('is-in');
     setTimeout(function(){ el.hidden=true; }, 450);
