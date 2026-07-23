@@ -623,9 +623,9 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
 .duo2-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.2rem;width:clamp(130px,20vw,180px)}
 .duo2-photo{position:relative;width:clamp(120px,15vw,170px);height:clamp(120px,15vw,170px);border-radius:50%;
  overflow:hidden;margin-bottom:.8rem;border:1px solid var(--border-strong);
- box-shadow:0 18px 50px -18px rgba(139,233,255,.4);background:rgba(255,255,255,.04);will-change:transform;
+ box-shadow:0 16px 40px -20px rgba(0,0,0,.55);background:rgba(255,255,255,.04);will-change:transform;
  transition:box-shadow .4s var(--ease),border-color .4s var(--ease)}
-.duo2-photo::after{content:'';position:absolute;inset:-6px;border-radius:50%;z-index:-1;background:var(--grad);opacity:.5;filter:blur(14px)}
+.duo2-photo::after{content:none}
 .duo2-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block;aspect-ratio:1/1}
 .duo2-card:nth-child(1) .duo2-photo{animation:duo2FloatA 6.5s ease-in-out infinite}
 .duo2-card:nth-child(2) .duo2-photo{animation:duo2FloatB 7.5s ease-in-out infinite .4s}
@@ -1159,6 +1159,37 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
     </div>
   </section>
 
+  <!-- ═══ IA STUDIO, POURQUOI ? (remonté juste sous les réalisations) ═══ -->
+  <section class="lp-sec">
+    <div class="wrap">
+      <div class="f-head">
+        <span class="mini-label">ia studio, pourquoi&nbsp;?</span>
+        <h2 class="f-h2">Trop petit pour une agence&nbsp;? <span class="grad-text">Pas pour nous</span></h2>
+      </div>
+      <div class="duo2">
+        <div class="duo2-faces">
+          <div class="duo2-card">
+            <span class="duo2-photo"><img src="team-alexis.jpg" alt="Alexis, cofondateur d'ia studio, à Valence dans la Drôme" loading="lazy" width="400" height="400" decoding="async"></span>
+            <h3 class="duo2-name">Alexis</h3>
+            <p class="duo2-role">Stratégie · Déploiement</p>
+            <p class="duo2-mini">Votre interlocuteur, de la première idée à la mise en ligne.</p>
+          </div>
+          <div class="duo2-card">
+            <span class="duo2-photo"><img src="team-simon.jpg" alt="Simon, cofondateur d'ia studio" loading="lazy" width="400" height="400" decoding="async"></span>
+            <h3 class="duo2-name">Simon</h3>
+            <p class="duo2-role">Architecte IA · Technologie</p>
+            <p class="duo2-mini">Il transforme les problèmes complexes en outils qui marchent.</p>
+          </div>
+        </div>
+        <p class="duo2-blurb">
+          Quand vous nous appelez, vous tombez sur <strong>Alexis ou Simon</strong>.
+          Pas un commercial, pas un chef de projet : ceux qui font votre site sont ceux qui vous parlent.
+          <strong>La stratégie et la technique, réunies dans le même duo</strong> — basés à Valence (Drôme) &amp; Paris.
+        </p>
+      </div>
+    </div>
+  </section>
+
 
   <!-- ═══ 3. CE QUI EST INCLUS ═══ -->
   <section class="features" id="services">
@@ -1252,39 +1283,6 @@ table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:0}
       <div style="display:flex;justify-content:center;margin-top:clamp(1.8rem,4vh,2.6rem)">
         <a class="btn-aura" href="#reserver">Réserver mon appel gratuit <span class="arr">→</span></a>
       </div>
-    </div>
-  </section>
-
-  <!-- ═══ 7. IA STUDIO, POURQUOI ? ═══ -->
-  <section class="lp-sec">
-    <div class="wrap">
-      <div class="f-head">
-        <span class="mini-label">ia studio, pourquoi&nbsp;?</span>
-        <h2 class="f-h2">Trop petit pour une agence&nbsp;? <span class="grad-text">Pas pour nous</span></h2>
-      </div>
-      <div class="duo2">
-        <div class="duo2-faces">
-          <div class="duo2-card">
-            <span class="duo2-photo"><img src="team-alexis.jpg" alt="Alexis, cofondateur d'ia studio, à Valence dans la Drôme" loading="lazy" width="400" height="400" decoding="async"></span>
-            <h3 class="duo2-name">Alexis</h3>
-            <p class="duo2-role">Stratégie · Déploiement</p>
-            <p class="duo2-mini">Votre interlocuteur, de la première idée à la mise en ligne.</p>
-          </div>
-          <div class="duo2-card">
-            <span class="duo2-photo"><img src="team-simon.jpg" alt="Simon, cofondateur d'ia studio" loading="lazy" width="400" height="400" decoding="async"></span>
-            <h3 class="duo2-name">Simon</h3>
-            <p class="duo2-role">Architecte IA · Technologie</p>
-            <p class="duo2-mini">Il transforme les problèmes complexes en outils qui marchent.</p>
-          </div>
-        </div>
-        <p class="duo2-blurb">
-          Quand vous nous appelez, vous tombez sur <strong>Alexis ou Simon</strong>.
-          Pas un commercial, pas un chef de projet : ceux qui font votre site sont ceux qui vous parlent.
-          <strong>La stratégie et la technique, réunies dans le même duo</strong> — basés à Valence (Drôme) &amp; Paris.
-        </p>
-      </div>
-    </div>
-  </section>
     </div>
   </section>
 
