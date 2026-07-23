@@ -934,12 +934,13 @@
         }
 
         /* ── Panneaux : empilés dans la même cellule, fondu + glissé ── */
-        .svc-viewport { display: grid; position: relative; z-index: 5; touch-action: pan-y;
-            /* la hauteur est calée sur le panneau actif (via JS) et s'anime en douceur */
-            transition: height .45s var(--ease-out); }
+        .svc-viewport { position: relative; z-index: 5; touch-action: pan-y; }
+        /* Le panneau ACTIF reste dans le flux → il donne sa hauteur au cadre.
+           Les panneaux inactifs passent en absolu par-dessus (pour le fondu),
+           sans influer sur la hauteur : un onglet court n'hérite donc plus du
+           vide laissé par le plus long (Automatisation). */
         .svc-panel {
-            grid-area: 1 / 1;
-            align-self: start;   /* chaque panneau à SA hauteur, pas étiré sur le plus grand */
+            position: absolute; top: 0; left: 0; width: 100%;
             opacity: 0; visibility: hidden;
             transform: translateY(16px);
             transition: opacity .55s var(--ease-out), transform .6s var(--ease-out),
@@ -947,6 +948,7 @@
             pointer-events: none;
         }
         .svc-panel.is-active {
+            position: relative;
             opacity: 1; visibility: visible;
             transform: none;
             transition: opacity .55s var(--ease-out) .12s, transform .6s var(--ease-out) .12s,
@@ -4563,14 +4565,9 @@ setTimeout(updateScene, 100);
     const panels = Array.from(viewport.querySelectorAll('.svc-panel'));
     const tabs = Array.from(document.querySelectorAll('.svc-tab'));
     let cur = 0;
-    /* Cale la hauteur du cadre sur le panneau ACTIF (+ le padding du cadre vitré),
-       pour qu'aucun panneau court ne garde le vide du plus long. box-sizing:border-box
-       → la hauteur inclut le padding, on l'ajoute donc à la hauteur de contenu. */
-    function caleHauteur() {
-        const cs = getComputedStyle(viewport);
-        const padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-        viewport.style.height = (panels[cur].offsetHeight + padV) + 'px';
-    }
+    /* La hauteur du cadre suit le panneau actif : celui-ci reste dans le flux
+       (position:relative en CSS) et les autres passent en absolu par-dessus.
+       Aucun calcul de hauteur nécessaire ici. */
     function goTo(i) {
         const next = ((i % panels.length) + panels.length) % panels.length;
         if (next === cur) return;
@@ -4580,14 +4577,8 @@ setTimeout(updateScene, 100);
             tb.classList.toggle('is-active', n === cur);
             tb.setAttribute('aria-selected', n === cur ? 'true' : 'false');
         });
-        caleHauteur();
     }
     tabs.forEach(tb => tb.addEventListener('click', () => goTo(+tb.dataset.idx)));
-    /* hauteur initiale (une fois la mise en page stabilisée + polices chargées) */
-    requestAnimationFrame(caleHauteur);
-    window.addEventListener('load', caleHauteur);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(caleHauteur);
-    let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(caleHauteur, 150); });
     let swX = 0;
     viewport.addEventListener('touchstart', e => { swX = e.touches[0].clientX; }, { passive: true });
     viewport.addEventListener('touchend', e => {
